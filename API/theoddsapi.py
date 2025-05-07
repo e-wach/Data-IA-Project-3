@@ -14,7 +14,7 @@ def fetch_odds_data():
     MARKETS = 'h2h' # 'h2h,spreads,totals'
     ODDS_FORMAT = 'decimal'
     DATE_FORMAT = 'iso' ## 'unix' si queremos con hora
-    DAYS_FROM = 2 # 7
+    DAYS_FROM = 7
     try:
         odds_response = requests.get(
             f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds',
