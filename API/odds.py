@@ -11,7 +11,7 @@ from nba_api.live.nba.endpoints import Odds
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-
+# Odds for today's games
 @app.route("/odds", methods=["POST"])
 def nba_odds():
     topic = "games_odds"
