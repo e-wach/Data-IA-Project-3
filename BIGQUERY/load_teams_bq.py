@@ -10,7 +10,7 @@ from google.cloud import bigquery
 PROJECT_ID        = os.getenv("GCP_PROJECT_ID", "western-mix-459018-g4")
 SUBSCRIPTION_NAME = os.getenv("SUB_NBA_TEAMS", "nba_teams-sub")
 DATASET_ID        = os.getenv("BQ_DATASET", "nba_dataset")
-TABLE_ID          = os.getenv("BQ_TABLE", "teams")
+TABLE_ID          = os.getenv("BQ_TABLE", "nba_teams")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
