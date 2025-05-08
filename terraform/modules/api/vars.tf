@@ -5,3 +5,11 @@ variable topic_names {
 variable "region" {
     type = string
 }
+
+variable "project_id" {
+    type = string
+}
+
+variable "api_key_odds" {
+    type = string
+}

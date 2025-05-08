@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from datetime import datetime, timedelta
 from nba_api.stats.endpoints import leaguegamefinder, scoreboardv2
 
@@ -12,36 +13,40 @@ logging.basicConfig(level=logging.DEBUG)
 def get_games(topic):
     seasons = ["2022-23", "2023-24", "2024-25"]
     all_games = []
-    for season in seasons:
-        gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable=season)
-        games = gamefinder.get_normalized_dict()["LeagueGameFinderResults"]
-        for game in games:
-            game_data = {
-                "season_id": game["SEASON_ID"],
-                "season": season,
-                "team_id": game["TEAM_ID"],
-                "team_abbr": game["TEAM_ABBREVIATION"],
-                "team_name": game["TEAM_NAME"],
-                "game_id": game["GAME_ID"],
-                "game_date": game["GAME_DATE"],
-                "matchup": game["MATCHUP"],
-                "win_loss": game["WL"],
-                "points": game["PTS"],
-                "fg_pct": game["FG_PCT"],
-                "three_pt_pct": game["FG3_PCT"],
-                "ft_pct": game["FT_PCT"],
-                "reb": game["REB"],
-                "ast": game["AST"],
-                "tov": game["TOV"],
-                "plus_minus": game["PLUS_MINUS"]
-            }
-            all_games.append(game_data)
-            try:
-                message = json.dumps(game_data)
-                publish_message(topic, message)
-                logging.info(f"Published message to topic {topic}: {message}")
-            except Exception as e:
-                logging.error(f"Error publishing message for game {game['GAME_ID']}: {e}")
+    try:
+        for season in seasons:
+            gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable=season)
+            games = gamefinder.get_normalized_dict()["LeagueGameFinderResults"]
+            for game in games:
+                game_data = {
+                    "season_id": game["SEASON_ID"],
+                    "season": season,
+                    "team_id": game["TEAM_ID"],
+                    "team_abbr": game["TEAM_ABBREVIATION"],
+                    "team_name": game["TEAM_NAME"],
+                    "game_id": game["GAME_ID"],
+                    "game_date": game["GAME_DATE"],
+                    "matchup": game["MATCHUP"],
+                    "win_loss": game["WL"],
+                    "points": game["PTS"],
+                    "fg_pct": game["FG_PCT"],
+                    "three_pt_pct": game["FG3_PCT"],
+                    "ft_pct": game["FT_PCT"],
+                    "reb": game["REB"],
+                    "ast": game["AST"],
+                    "tov": game["TOV"],
+                    "plus_minus": game["PLUS_MINUS"]
+                }
+                all_games.append(game_data)
+                try:
+                    message = json.dumps(game_data)
+                    publish_message(topic, message)
+                    logging.info(f"Published message to topic {topic}: {message}")
+                except Exception as e:
+                    logging.error(f"Error publishing message for game {game['GAME_ID']}: {e}")
+    except Exception as e:
+            logging.error(f"Error fetching games for season {season}: {e}")
+    time.sleep(10)
 
 
 # NBA upcoming games of the week 

@@ -2,18 +2,17 @@ import requests
 import os
 import json
 import logging
-from dotenv import load_dotenv
 
 from .publisher import publish_message
 
 
 logging.basicConfig(level=logging.INFO)
-load_dotenv() ## cambiar cuando tengamos el TF
 
+
+API_KEY = os.getenv('API_KEY', 'default-key')
 
 # Call to The Odds API
-def fetch_odds_data():
-    API_KEY = os.environ['API_KEY'] ## cambiarlo por os.getenv() cuando hagamos el TF
+def fetch_odds_data(): 
     SPORT = 'basketball_nba'
     REGIONS = 'eu' # 'eu,us,uk'
     MARKETS = 'h2h' # 'h2h,spreads,totals'
