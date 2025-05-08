@@ -1,10 +1,15 @@
 import requests
 import os
+import json
 import logging
 from dotenv import load_dotenv
 
+from .publisher import publish_message
+
+
 logging.basicConfig(level=logging.INFO)
-load_dotenv()
+load_dotenv() ## cambiar cuando tengamos el TF
+
 
 # Call to The Odds API
 def fetch_odds_data():
@@ -34,6 +39,7 @@ def fetch_odds_data():
     except Exception as e:
         logging.error(f"Error fetching odds data: {str(e)}")
         return None
+
 
 def create_market_message(market):
     market_outcomes = []
@@ -69,3 +75,34 @@ def create_bookmaker_message(bookmaker):
         "bookmaker_key": bookmaker_key,
         "markets": bookmaker_markets
     }
+
+
+def get_odds_week(topic):
+    # topic_odds = "odds_week" ### Convertir en variable de entorno
+    try: 
+        odds_json = fetch_odds_data()
+        if not odds_json:
+            return {"status": "error", "message": "No odds data available"}, 500
+        for game in odds_json:
+            game_id = game.get('id')
+            home_team = game.get('home_team')
+            away_team = game.get('away_team')
+            message = {
+                "game_id": game_id,
+                "home_team": home_team,
+                "away_team": away_team,
+                "bookmakers": []
+            }
+            for bookmaker in game.get('bookmakers', []):
+                bookmaker_message = create_bookmaker_message(bookmaker)
+                if bookmaker_message.get("markets"):
+                    message["bookmakers"].append(bookmaker_message)
+                else:
+                    logging.warning(f"Bookmaker {bookmaker_message['bookmaker_name']} has no valid markets.")
+            message_json = json.dumps(message)
+            publish_message(topic, message_json)
+            logging.info(f"Published odds for game {game_id} - {home_team} vs {away_team}")
+        return {"status": "ok"}, 200
+    except Exception as e:
+        logging.error(f"Error in nba_odds_week: {str(e)}")
+        return {"status": "error", "message": str(e)}, 500
