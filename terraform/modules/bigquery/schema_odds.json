@@ -1,0 +1,16 @@
+[
+    { "name": "game_id",       "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "home_team_id",  "type": "INTEGER", "mode": "REQUIRED" },
+    { "name": "away_team_id",  "type": "INTEGER", "mode": "REQUIRED" },
+    { "name": "market_name",   "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "odds_type_id",  "type": "INTEGER", "mode": "REQUIRED" },
+    { "name": "group_name",    "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "book_name",     "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "country_code",  "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "book_url",      "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "odds_type",     "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "odds",          "type": "FLOAT",   "mode": "NULLABLE" },
+    { "name": "opening_odds",  "type": "FLOAT",   "mode": "NULLABLE" },
+    { "name": "odds_trend",    "type": "FLOAT",   "mode": "NULLABLE" }
+  ]
+  
