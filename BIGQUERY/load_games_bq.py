@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 from google.cloud import bigquery
 
 # 1) Configuración (puedes sobreescribir con variables de entorno)
-PROJECT_ID         = os.getenv("GCP_PROJECT_ID", "western-mix-459018-g4")
+PROJECT_ID         = os.getenv("GCP_PROJECT_ID", "western-mix-459018-g4") # Cambiar por tu proyecto
 SUBSCRIPTION_NAME  = os.getenv("SUB_NBA_GAMES", "nba_games-sub")
 DATASET_ID         = os.getenv("BQ_DATASET",     "nba_dataset")
 TABLE_ID           = os.getenv("BQ_TABLE",       "nba_games")
