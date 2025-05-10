@@ -1,15 +1,16 @@
+data "google_project" "project" {}
+
 # PUB/SUB topics and subscriptions
 resource "google_pubsub_topic" "pubsub_topics" {
-    count = length(var.topic_names)
-    name = var.topic_names[count.index]
+  for_each = var.topic_names
+  name     = each.value
 }
 
 resource "google_pubsub_subscription" "pubsub_subs" {
-    count = length(var.topic_names)
-    topic = google_pubsub_topic.pubsub_topics[count.index].name
-    name = "${var.topic_names[count.index]}-sub"
+  for_each = var.topic_names
+  topic    = google_pubsub_topic.pubsub_topics[each.key].name
+  name     = "${each.value}-sub"
 }
-
 
 # CLOUD RUN - API
 ## Artifact Registry repo
@@ -38,7 +39,7 @@ resource "null_resource" "docker_build_push_api" {
 
 ## Cloud Run Service
 resource "google_cloud_run_v2_service" "cloudrun-api" {
-    name = "cloudrun-nba-api"
+    name = var.service_name
     location = var.region
     deletion_protection = false
     ingress = "INGRESS_TRAFFIC_ALL" ### "INGRESS_INTERNAL_ONLY"
@@ -56,7 +57,7 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
             dynamic "env" {
                 for_each = var.topic_names
                 content {
-                    name = "TOPIC_${env.value}"
+                    name = "TOPIC_${env.key}"
                     value = env.value
                 }
             }
@@ -68,13 +69,13 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
     depends_on = [google_artifact_registry_repository.api_repo, null_resource.docker_build_push_api]
 }
 
-############### CAMBIAR PERMISOS A SOLO LOS DEL GRUPO
-# resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
-#   project = google_cloud_run_v2_service.cloudrun-api.project
-#   location = google_cloud_run_v2_service.cloudrun-api.location
-#   name = google_cloud_run_v2_service.cloudrun-api.name
-#   role = "roles/run.invoker"
-#   member = "allUsers"
+## PERMISOS 
+resource "google_cloud_run_v2_service_iam_member" "private_invoker" {
+  project = google_cloud_run_v2_service.cloudrun-api.project
+  location = google_cloud_run_v2_service.cloudrun-api.location
+  name = google_cloud_run_v2_service.cloudrun-api.name
+  role = "roles/run.invoker"
+  member = "serviceAccount:service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
 
-#   depends_on = [google_cloud_run_v2_service.cloudrun-api]
-# }
+  depends_on = [google_cloud_run_v2_service.cloudrun-api]
+}
