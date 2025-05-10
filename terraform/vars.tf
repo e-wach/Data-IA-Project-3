@@ -1,3 +1,7 @@
+variable "bucket_state" {
+    type = string
+}
+
 variable "project_id" {
     type = string
 }

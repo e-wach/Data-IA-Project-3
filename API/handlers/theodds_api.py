@@ -3,7 +3,7 @@ import os
 import json
 import logging
 
-from publisher import publish_message
+from .publisher import publish_message
 
 
 logging.basicConfig(level=logging.INFO)
