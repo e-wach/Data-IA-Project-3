@@ -1,4 +1,6 @@
-data "google_project" "project" {}
+terraform {
+  backend "gcs" {}
+}
 
 module "api" {
   source = "./modules/api"
@@ -6,8 +8,6 @@ module "api" {
   region = var.region
   project_id = var.project_id
   api_key_odds = var.api_key_odds
-  image_url = var.api_image
-  service_name = "cloudrun-nba-api"
 }
 
 module "bigquery" {

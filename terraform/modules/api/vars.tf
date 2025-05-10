@@ -1,11 +1,5 @@
-variable "topic_names" {
-  type = object({
-    teams      = string
-    games      = string
-    games_week = string
-    stats      = string
-    odds       = string
-  })
+variable topic_names {
+    type = list(string)
 }
 
 variable "region" {
@@ -20,10 +14,3 @@ variable "api_key_odds" {
     type = string
 }
 
-variable "service_name" {
-  type = string
-}
-
-variable "image_url" {
-  type = string
-}

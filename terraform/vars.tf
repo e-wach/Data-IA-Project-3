@@ -6,24 +6,15 @@ variable "region" {
     type = string
 }
 
-variable "topic_names" {
-  type = object({
-    teams      = string
-    games      = string
-    games_week = string
-    stats      = string
-    odds       = string
-  })
+variable topic_names {
+    type = list(string)
+    default = ["nba_teams", "nba_games", "nba_games_week", "team_metrics", "team_season_stats", "team_stats", "odds_week"]
 }
 
 variable "api_key_odds" {
     type = string
 }
 
-variable "api_image" {
-    type = string
-}
-
-variable "service_name" {
+variable "bucket_state" {
   type = string
 }
