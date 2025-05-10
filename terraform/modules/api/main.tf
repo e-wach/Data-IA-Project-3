@@ -12,7 +12,7 @@ resource "google_pubsub_subscription" "pubsub_subs" {
 
 
 # CLOUD RUN - API
-## Artifact Registry repo
+# Artifact Registry repo
 resource "google_artifact_registry_repository" "api_repo" {
   location      = var.region
   repository_id = "nba-api-repo"
@@ -30,9 +30,9 @@ resource "null_resource" "docker_build_push_api" {
       docker build -t ${local.image_path} -f ../API/Dockerfile ../API && docker push ${local.image_path}
     EOT
   }
-  triggers = {
-    always_run = timestamp()
-  }
+#   triggers = {
+#     always_run = timestamp()
+#   }
   depends_on = [google_artifact_registry_repository.api_repo]
 }
 
@@ -41,7 +41,7 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
     name = "cloudrun-nba-api"
     location = var.region
     deletion_protection = false
-    ingress = "INGRESS_TRAFFIC_ALL" ### "INGRESS_INTERNAL_ONLY"
+    ingress = "INGRESS_TRAFFIC_INTERNAL_ONLY"
     template {
         containers {
             image = local.image_path
@@ -67,14 +67,3 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
     }
     depends_on = [google_artifact_registry_repository.api_repo, null_resource.docker_build_push_api]
 }
-
-############### CAMBIAR PERMISOS A SOLO LOS DEL GRUPO
-# resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
-#   project = google_cloud_run_v2_service.cloudrun-api.project
-#   location = google_cloud_run_v2_service.cloudrun-api.location
-#   name = google_cloud_run_v2_service.cloudrun-api.name
-#   role = "roles/run.invoker"
-#   member = "allUsers"
-
-#   depends_on = [google_cloud_run_v2_service.cloudrun-api]
-# }
