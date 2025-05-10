@@ -8,7 +8,6 @@ from .publisher import publish_message
 
 logging.basicConfig(level=logging.INFO)
 
-
 API_KEY = os.getenv('API_KEY', 'default-key')
 
 # Call to The Odds API
@@ -77,7 +76,6 @@ def create_bookmaker_message(bookmaker):
 
 
 def get_odds_week(topic):
-    # topic_odds = "odds_week" ### Convertir en variable de entorno
     try: 
         odds_json = fetch_odds_data()
         if not odds_json:

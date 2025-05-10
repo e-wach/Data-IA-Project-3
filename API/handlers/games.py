@@ -10,8 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 # NBA completed games
-def get_games(topic):
-    seasons = ["2022-23", "2023-24", "2024-25"]
+def get_games(topic, seasons):
     all_games = []
     try:
         for season in seasons:
