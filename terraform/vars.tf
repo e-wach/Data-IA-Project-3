@@ -18,7 +18,3 @@ variable topic_names {
 variable "api_key_odds" {
     type = string
 }
-
-variable "bucket_state" {
-  type = string
-}
