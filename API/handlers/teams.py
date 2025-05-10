@@ -2,7 +2,7 @@ import json
 import logging
 from nba_api.stats.static import teams
 
-from .publisher import publish_message
+from publisher import publish_message
 
 
 logging.basicConfig(level=logging.DEBUG)

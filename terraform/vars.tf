@@ -8,7 +8,7 @@ variable "region" {
 
 variable topic_names {
     type = list(string)
-    default = ["nba_teams", "nba_games", "nba_games_week", "team_metrics", "team_season_stats", "team_stats", "odds_week"]
+    default = ["nba_teams", "nba_games", "nba_games_week", "games_stats", "odds_week"]
 }
 
 variable "api_key_odds" {
