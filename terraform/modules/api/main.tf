@@ -1,4 +1,3 @@
-# PUB/SUB topics and subscriptions
 resource "google_pubsub_topic" "pubsub_topics" {
     count = length(var.topic_names)
     name = var.topic_names[count.index]
