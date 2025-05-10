@@ -2,7 +2,7 @@ import json
 from nba_api.stats.endpoints import teamgamelog
 from nba_api.stats.static import teams
 
-from publisher import publish_message
+from .publisher import publish_message
 
 
 def get_stats(topic, seasons):

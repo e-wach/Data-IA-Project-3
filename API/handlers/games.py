@@ -4,45 +4,50 @@ import time
 from datetime import datetime, timedelta
 from nba_api.stats.endpoints import leaguegamefinder, scoreboardv2
 
-from publisher import publish_message
+from .publisher import publish_message
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 # NBA completed games
-def get_games(topic, seasons):
+def get_games(topic, seasons, fetch_all=True):
     all_games = []
     try:
         for season in seasons:
             gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable=season)
             games = gamefinder.get_normalized_dict()["LeagueGameFinderResults"]
+            if not fetch_all: 
+                yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+                yesterday_str = yesterday.strftime('%Y-%m-%d')
             for game in games:
-                game_data = {
-                    "season_id": game["SEASON_ID"],
-                    "season": season,
-                    "team_id": game["TEAM_ID"],
-                    "team_abbr": game["TEAM_ABBREVIATION"],
-                    "team_name": game["TEAM_NAME"],
-                    "game_id": game["GAME_ID"],
-                    "game_date": game["GAME_DATE"],
-                    "matchup": game["MATCHUP"],
-                    "win_loss": game["WL"],
-                    "points": game["PTS"],
-                    "fg_pct": game["FG_PCT"],
-                    "three_pt_pct": game["FG3_PCT"],
-                    "ft_pct": game["FT_PCT"],
-                    "reb": game["REB"],
-                    "ast": game["AST"],
-                    "tov": game["TOV"],
-                    "plus_minus": game["PLUS_MINUS"]
-                }
-                all_games.append(game_data)
-                try:
-                    message = json.dumps(game_data)
-                    publish_message(topic, message)
-                    logging.info(f"Published message to topic {topic}: {message}")
-                except Exception as e:
-                    logging.error(f"Error publishing message for game {game['GAME_ID']}: {e}")
+                game_date = game["game_date"]
+                if fetch_all or game_date >= yesterday_str:
+                    game_data = {
+                        "season_id": game["SEASON_ID"],
+                        "season": season,
+                        "team_id": game["TEAM_ID"],
+                        "team_abbr": game["TEAM_ABBREVIATION"],
+                        "team_name": game["TEAM_NAME"],
+                        "game_id": game["GAME_ID"],
+                        "game_date": game_date,
+                        "matchup": game["MATCHUP"],
+                        "win_loss": game["WL"],
+                        "points": game["PTS"],
+                        "fg_pct": game["FG_PCT"],
+                        "three_pt_pct": game["FG3_PCT"],
+                        "ft_pct": game["FT_PCT"],
+                        "reb": game["REB"],
+                        "ast": game["AST"],
+                        "tov": game["TOV"],
+                        "plus_minus": game["PLUS_MINUS"]
+                    }
+                    all_games.append(game_data)
+                    try:
+                        message = json.dumps(game_data)
+                        publish_message(topic, message)
+                        logging.info(f"Published message to topic {topic}: {message}")
+                    except Exception as e:
+                        logging.error(f"Error publishing message for game {game['GAME_ID']}: {e}")
     except Exception as e:
             logging.error(f"Error fetching games for season {season}: {e}")
     time.sleep(10)
