@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta
 from nba_api.stats.endpoints import leaguegamefinder, scoreboardv2
 
-from .publisher import publish_message
+from publisher import publish_message
 
 logging.basicConfig(level=logging.DEBUG)
 
