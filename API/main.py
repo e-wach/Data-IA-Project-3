@@ -75,10 +75,10 @@ def daily_data(type):
         elif type == "upcomingGames":
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-        elif type == "stats":
-            seasons = ["2024-25"]
-            get_stats(topic_stats, seasons)
-            logging.info("2024-25 NBA stats sent to PubSub")
+        # elif type == "stats": ######################## SOLO HASTA ABRIL 2025
+        #     seasons = ["2024-25"]
+        #     get_stats(topic_stats, seasons, fetch_all=False)
+        #     logging.info("2024-25 NBA stats sent to PubSub")
         # elif type == "odds":
             # get_odds_week(topic_odds)
             # logging.info("NBA betting odds sent to PubSub")

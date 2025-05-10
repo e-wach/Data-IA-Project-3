@@ -67,13 +67,3 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
     }
     depends_on = [google_artifact_registry_repository.api_repo, null_resource.docker_build_push_api]
 }
-
-# resource "null_resource" "trigger_api_setup_all" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-# powershell -Command "$TOKEN = (gcloud auth print-identity-token); curl -X POST -H 'Authorization: Bearer $TOKEN' https://cloudrun-nba-api-706768102860.europe-west1.run.app/setup/all"
-# EOT
-#   }
-
-#   depends_on = [google_cloud_run_v2_service.cloudrun-api]
-# }
