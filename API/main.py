@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 topic_teams = os.getenv("TOPIC_nba_teams", "nba_teams")
 topic_games = os.getenv("TOPIC_nba_games", "nba_games")
 topic_games_week = os.getenv("TOPIC_nba_games_week", "nba_games_week")
-topic_stats = os.getenv("TOPIC_games_stats", "games_stats")
+# topic_stats = os.getenv("TOPIC_games_stats", "games_stats")
 topic_odds = os.getenv("TOPIC_odds_week", "odds_week")
 
 
@@ -30,10 +30,10 @@ def historical_data(type):
             seasons = ["2022-23", "2023-24", "2024-25"]
             get_games(topic_games, seasons)
             logging.info("NBA historical games sent to PubSub")
-        elif type == "stats":
-            seasons = ["2022-23", "2023-24", "2024-25"]
-            get_stats(topic_stats, seasons)
-            logging.info("NBA historical stats sent to PubSub")
+        # elif type == "stats":
+        #     seasons = ["2022-23", "2023-24", "2024-25"]
+        #     get_stats(topic_stats, seasons)
+        #     logging.info("NBA historical stats sent to PubSub")
         elif type == "upcomingGames":
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
@@ -48,10 +48,10 @@ def historical_data(type):
             get_games(topic_games, seasons)
             logging.info("NBA historical games sent to PubSub")
             time.sleep(10)
-            seasons = ["2022-23", "2023-24", "2024-25"]
-            get_stats(topic_stats, seasons)
-            logging.info("NBA historical stats sent to PubSub")
-            time.sleep(10)
+            # seasons = ["2022-23", "2023-24", "2024-25"]
+            # get_stats(topic_stats, seasons)
+            # logging.info("NBA historical stats sent to PubSub")
+            # time.sleep(10)
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
             time.sleep(10)
@@ -89,9 +89,9 @@ def daily_data(type):
             time.sleep(10)
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-            seasons = ["2024-25"]
-            get_stats(topic_stats, seasons)
-            logging.info("2024-25 NBA stats sent to PubSub")
+            # seasons = ["2024-25"]
+            # get_stats(topic_stats, seasons)
+            # logging.info("2024-25 NBA stats sent to PubSub")
             # get_odds_week(topic_odds)
             # logging.info("NBA betting odds sent to PubSub")
         else:
