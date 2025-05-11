@@ -10,43 +10,58 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 # NBA completed games
-def get_games(topic):
-    seasons = ["2022-23", "2023-24", "2024-25"]
+def get_games(topic, seasons, fetch_all=True):
     all_games = []
-    try:
-        for season in seasons:
+    yesterday = datetime.now() - timedelta(days=1)
+    for season in seasons:
+        try:
             gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable=season)
             games = gamefinder.get_normalized_dict()["LeagueGameFinderResults"]
+            filtered_games = 0
             for game in games:
-                game_data = {
-                    "season_id": game["SEASON_ID"],
-                    "season": season,
-                    "team_id": game["TEAM_ID"],
-                    "team_abbr": game["TEAM_ABBREVIATION"],
-                    "team_name": game["TEAM_NAME"],
-                    "game_id": game["GAME_ID"],
-                    "game_date": game["GAME_DATE"],
-                    "matchup": game["MATCHUP"],
-                    "win_loss": game["WL"],
-                    "points": game["PTS"],
-                    "fg_pct": game["FG_PCT"],
-                    "three_pt_pct": game["FG3_PCT"],
-                    "ft_pct": game["FT_PCT"],
-                    "reb": game["REB"],
-                    "ast": game["AST"],
-                    "tov": game["TOV"],
-                    "plus_minus": game["PLUS_MINUS"]
-                }
-                all_games.append(game_data)
+                game_date_str = game.get("GAME_DATE", "")
                 try:
-                    message = json.dumps(game_data)
-                    publish_message(topic, message)
-                    logging.info(f"Published message to topic {topic}: {message}")
-                except Exception as e:
-                    logging.error(f"Error publishing message for game {game['GAME_ID']}: {e}")
-    except Exception as e:
+                    game_date = datetime.strptime(game_date_str, "%Y-%m-%d")
+                except ValueError:
+                    logging.warning(f"Skipping game with invalid date format: {game_date_str}")
+                    continue
+                if fetch_all or game_date.date() >= yesterday.date():
+                    game_data = {
+                        "season_id": game.get("SEASON_ID"),
+                        "season": season,
+                        "team_id": game.get("TEAM_ID"),
+                        "team_abbr": game.get("TEAM_ABBREVIATION"),
+                        "team_name": game.get("TEAM_NAME"),
+                        "game_id": game.get("GAME_ID"),
+                        "game_date": game_date_str,
+                        "matchup": game.get("MATCHUP"),
+                        "win_loss": game.get("WL"),
+                        "points": game.get("PTS"),
+                        "fg_pct": game.get("FG_PCT"),
+                        "three_pt_pct": game.get("FG3_PCT"),
+                        "ft_pct": game.get("FT_PCT"),
+                        "reb": game.get("REB"),
+                        "ast": game.get("AST"),
+                        "tov": game.get("TOV"),
+                        "plus_minus": game.get("PLUS_MINUS")
+                    }
+                    all_games.append(game_data)
+                    filtered_games += 1
+                    try:
+                        message = json.dumps(game_data)
+                        publish_message(topic, message)
+                        logging.info(f"Published message to topic {topic}: {message}")
+                    except Exception as e:
+                        logging.error(f"Error publishing message for game {game.get('GAME_ID')}: {e}")
+            if filtered_games == 0:
+                if fetch_all:
+                    logging.info(f"No games found for season {season}.")
+                else:
+                    logging.info(f"No games found for season {season} from {yesterday.date()} onward.")
+            time.sleep(10)
+        except Exception as e:
             logging.error(f"Error fetching games for season {season}: {e}")
-    time.sleep(10)
+    return all_games
 
 
 # NBA upcoming games of the week 

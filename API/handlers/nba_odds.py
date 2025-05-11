@@ -2,7 +2,7 @@ import json
 import logging
 from nba_api.live.nba.endpoints import Odds
 
-from .publisher import publish_message
+from publisher import publish_message
 
 logging.basicConfig(level=logging.DEBUG)
 

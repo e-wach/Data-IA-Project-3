@@ -13,3 +13,4 @@ variable "project_id" {
 variable "api_key_odds" {
     type = string
 }
+
