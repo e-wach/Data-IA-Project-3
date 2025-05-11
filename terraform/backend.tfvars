@@ -1,2 +1,2 @@
-bucket = "REEMPLAZAR_BUCKET_AQUI"
+bucket = "terraform-state-ewach"
 prefix = "terraform/terraform.tfstate"
