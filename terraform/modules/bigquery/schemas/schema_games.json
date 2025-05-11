@@ -1,16 +1,16 @@
 [
-    { "name": "season_id",    "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "season_id",    "type": "STRING",  "mode": "NULLABLE" },
     { "name": "season",       "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "team_id",      "type": "INTEGER", "mode": "REQUIRED" },
-    { "name": "team_abbr",    "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "team_name",    "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "team_id",      "type": "INTEGER", "mode": "NULLABLE" },
+    { "name": "team_abbr",    "type": "STRING",  "mode": "NULLABLE" },
+    { "name": "team_name",    "type": "STRING",  "mode": "NULLABLE" },
     { "name": "game_id",      "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "game_date",    "type": "DATE",    "mode": "REQUIRED" },
-    { "name": "matchup",      "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "home_team",    "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "away_team",    "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "matchup_type", "type": "STRING",  "mode": "REQUIRED" },
-    { "name": "win_loss",     "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "game_date",    "type": "DATE",    "mode": "NULLABLE" },
+    { "name": "matchup",      "type": "STRING",  "mode": "NULLABLE" },
+    { "name": "home_team",    "type": "STRING",  "mode": "NULLABLE" },
+    { "name": "away_team",    "type": "STRING",  "mode": "NULLABLE" },
+    { "name": "matchup_type", "type": "STRING",  "mode": "NULLABLE" },
+    { "name": "win_loss",     "type": "STRING",  "mode": "NULLABLE" },
     { "name": "points",       "type": "INTEGER", "mode": "NULLABLE" },
     { "name": "fg_pct",       "type": "FLOAT",   "mode": "NULLABLE" },
     { "name": "three_pt_pct", "type": "FLOAT",   "mode": "NULLABLE" },
@@ -18,6 +18,7 @@
     { "name": "reb",          "type": "INTEGER", "mode": "NULLABLE" },
     { "name": "ast",          "type": "INTEGER", "mode": "NULLABLE" },
     { "name": "tov",          "type": "INTEGER", "mode": "NULLABLE" },
-    { "name": "plus_minus",   "type": "FLOAT",   "mode": "NULLABLE" }
+    { "name": "plus_minus",   "type": "FLOAT",   "mode": "NULLABLE" },
+    { "name": "is_completed",  "type": "BOOLEAN",  "mode": "NULLABLE"}
   ]
   

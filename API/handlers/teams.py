@@ -14,7 +14,8 @@ def get_teams(topic):
         for team in nba_teams:
             message = json.dumps({
                 "team_id": team.get("id"), 
-                "team_name": team.get("full_name"), 
+                "team_name": team.get("full_name"),
+                "abbreviation": team.get("abbreviation"),
                 "nickname": team.get("nickname"),
                 "city": team.get("city"),
                 "state": team.get("state"),

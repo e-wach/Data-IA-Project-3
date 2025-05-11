@@ -22,3 +22,14 @@ def transform_matchup(matchup):
     else:
         return matchup, matchup, None
     
+
+def get_game_status(game_date_str, status_id=None):
+    current_date = datetime.today().date()
+    if status_id is not None:
+        return status_id != 1
+    try:
+        game_date = datetime.strptime(game_date_str, "%Y-%m-%d").date()
+        return game_date < current_date 
+    except ValueError:
+        logging.error(f"Error trying to convert game date: {game_date_str}")
+        return None
