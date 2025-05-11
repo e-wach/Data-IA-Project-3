@@ -50,7 +50,7 @@ def get_game_status(game_date_str, status_id=None):
 
 # NBA TEAMS
 @functions_framework.cloud_event
-def callback_teams(cloud_event):
+def callback_games(cloud_event):
     try:
         payload = json.loads(base64.b64decode(cloud_event.data["message"]["data"]).decode('utf-8'))
         if "game_date" not in payload or "matchup" not in payload:
