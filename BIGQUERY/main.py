@@ -5,6 +5,11 @@ from datetime import datetime
 from google.cloud import pubsub_v1
 from google.cloud import bigquery
 
+from handlers.transform_games import transform_game_date, transform_matchup
+from utils.load_bq import insert_into_bigquery
+from utils.pubsub import listen_for_messages
+
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 PROJECT_ID         = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
@@ -17,39 +22,8 @@ subscriber = pubsub_v1.SubscriberClient()
 sub_path = subscriber.subscription_path(PROJECT_ID, SUBSCRIPTION_NAME)
 bq = bigquery.Client(project=PROJECT_ID)
 
-
-def transform_game_date(game_date_str):
-    try:
-        return datetime.strptime(game_date_str, "%Y-%m-%d").strftime("%Y-%m-%d")
-    except ValueError:
-        logging.warning(f"Invalid game date format: {game_date_str}")
-        return None
-
-
-def transform_matchup(matchup):
-    if "vs." in matchup:
-        home_team, away_team = matchup.split(" vs.")
-        return home_team.strip(), away_team.strip(), "home"
-    elif "@" in matchup:
-        away_team, home_team = matchup.split(" @")
-        return home_team.strip(), away_team.strip(), "away"
-    else:
-        return matchup, matchup, None
-
-
-def insert_into_bigquery(record):
-    try:
-        table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
-        errors = bq.insert_rows_json(table_ref, [record])
-        if errors:
-            logging.error(f"Errores al insertar en BigQuery: {errors}")
-        else:
-            logging.info("Inserción exitosa en BigQuery.")
-    except Exception as e:
-        logging.error(f"Error al insertar en BigQuery: {e}")
-
-
-def callback(message):
+# NBA GAMES (completed games)
+def callback_games(message):
     try:
         logging.info(f"Received message: {message.data.decode('utf-8')}")      
         payload = json.loads(message.data.decode('utf-8'))
@@ -63,7 +37,7 @@ def callback(message):
         payload["home_team"] = home
         payload["away_team"] = away
         payload["matchup_type"] = m_type
-        insert_into_bigquery(payload)
+        insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, TABLE_ID)
         message.ack()
         logging.info("Mensaje procesado correctamente.")
     except Exception as e:
@@ -71,14 +45,6 @@ def callback(message):
         message.nack()
 
 
-def listen_for_messages():
-    streaming_pull_future = subscriber.subscribe(sub_path, callback=callback)
-    try:
-        streaming_pull_future.result()
-    except Exception as e:
-        logging.error(f"Error while listening: {e}")
-        streaming_pull_future.cancel()
-
 
 if __name__ == "__main__":
-    listen_for_messages()
+    listen_for_messages(callback_games, subscription_name=SUBSCRIPTION_NAME, project_id=PROJECT_ID)
