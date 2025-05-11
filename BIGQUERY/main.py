@@ -10,24 +10,38 @@ from utils.pubsub import listen_for_messages
 
 from handlers.transform_games import transform_game_date, transform_matchup, get_game_status
 from handlers.transform_games_week import remove_fields, transform_season, transform_team_id_to_abbr
-# from handlers.get_teams import callback_teams, teams_dict
-
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
+# Project ID env. variable
 PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
-# NBA_TEAMS_SUB = os.getenv("NBA_TEAMS_SUB", "nba_teams-sub")
+# Pub/Sub env.variables
+NBA_TEAMS_SUB = os.getenv("NBA_TEAMS_SUB", "nba_teams-sub")
 NBA_GAMES_SUB  = os.getenv("NBA_GAMES_SUB", "nba_games-sub")
 NBA_GAMES_WEEK_SUB = os.getenv("NBA_GAMES_WEEK_SUB","nba_games_week-sub")
+NBA_ODDS_SUB = os.getenv("NBA_ODDS_SUB","odds_week-sub")
+# BigQuery env. variables
 DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
+NBA_TEAMS_TABLE = os.getenv("NBA_TEAMS_TABLE", "nba_teams")
 NBA_GAMES_TABLE = os.getenv("NBA_GAMES_TABLE", "nba_games")
 NBA_GAMES_WEEK_TABLE = os.getenv("NBA_GAMES_WEEK_TABLE", "nba_games_week")
+NBA_ODDS_TABLE = os.getenv("NBA_ODDS_TABLE", "nba_odds")
 
 
-subscriber = pubsub_v1.SubscriberClient()
-sub_path = subscriber.subscription_path(PROJECT_ID, NBA_GAMES_SUB)
 bq = bigquery.Client(project=PROJECT_ID)
+
+
+# NBA TEAMS
+def callback_teams(message):
+    try:
+        payload = json.loads(message.data.decode("utf-8"))
+        insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_TEAMS_TABLE)
+        message.ack()
+        logging.info("NBA teams processed sucessfully.")
+    except Exception as e:
+        logging.error(f"Error trying to process NBA teams: {e}")
+        message.nack()
 
 
 # NBA GAMES (completed games)
@@ -49,10 +63,11 @@ def callback_games(message):
         payload["is_completed"] = game_status
         insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_GAMES_TABLE)
         message.ack()
-        logging.info("Message processed sucessfully.")
+        logging.info("NBA GAMES processed sucessfully.")
     except Exception as e:
-        logging.error(f"Error trying to process message: {e}")
+        logging.error(f"Error trying to process NBA games: {e}")
         message.nack()
+
 
 # NBA GAMES (next 7 days)
 def callback_upcoming_games(message):
@@ -64,20 +79,30 @@ def callback_upcoming_games(message):
         game_status = get_game_status(payload["GAME_DATE"], payload["GAME_STATUS_ID"])
         payload["is_completed"] = game_status
         del payload["GAME_STATUS_ID"]
-        payload["team_id"] = payload.pop("HOME_TEAM_ID") 
-        # transform_team_id_to_abbr(payload)
+        payload = transform_team_id_to_abbr(payload)
         payload = {k.lower(): v for k, v in payload.items()}
-        print(f"Upcoming game transformed: {payload}")
+        logging.info(f"Upcoming game transformed: {payload}")
         insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_GAMES_WEEK_TABLE)
+
         message.ack()
-        logging.info(f"Message processed sucessfully: {payload}.")
+        logging.info(f"NBA upcoming games processed sucessfully: {payload}.")
     except Exception as e:
-        logging.error(f"Error trying to process message: {e}")
+        logging.error(f"Error trying to process NBA upcoming games: {e}")
         message.nack()
 
 
+# NBA ODDS (The Odds API)
+def callback_odds(message):
+    try:
+        payload = json.loads(message.data.decode('utf-8'))
+        insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_ODDS_TABLE)
+    except Exception as e:
+        logging.error(f"Error trying to process odds: {e}")
+        message.nack()
 
 
 if __name__ == "__main__":
-    # listen_for_messages(callback_games, subscription_name=NBA_GAMES_SUB, project_id=PROJECT_ID)
+    listen_for_messages(callback_teams, subscription_name=NBA_TEAMS_SUB, project_id=PROJECT_ID)
+    listen_for_messages(callback_games, subscription_name=NBA_GAMES_SUB, project_id=PROJECT_ID)
     listen_for_messages(callback_upcoming_games, subscription_name=NBA_GAMES_WEEK_SUB, project_id=PROJECT_ID)
+    # listen_for_messages(callback_upcoming_games, subscription_name=NBA_ODDS_SUB, project_id=PROJECT_ID)

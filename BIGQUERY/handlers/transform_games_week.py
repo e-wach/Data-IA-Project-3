@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
-from handlers.get_teams import teams_dict
-
+import json
+import os
 
 def remove_fields(message):
     fields_remove = [
@@ -38,15 +38,20 @@ def transform_season(season):
 
 def transform_team_id_to_abbr(payload):
     try:
-        # home_team_info = teams_dict.get(payload["HOME_TEAM_ID"], {"abbreviation": "Unknown", "team_name": "Unknown"})
-        # payload["team_abbr"] = home_team_info["abbreviation"]
-        # payload["team_name"] = home_team_info["team_name"]
+        with open("./handlers/nba_teams.json", 'r') as f:
+            nba_teams = json.load(f)
+            nba_teams_dict = {team["team_id"]: team for team in nba_teams}
+            logging.debug(f"Datos cargados desde JSON: {nba_teams}") 
+        home_team_info = nba_teams_dict.get(payload["HOME_TEAM_ID"], {"abbreviation": "Unknown", "team_name": "Unknown"})
+        payload["team_abbr"] = home_team_info["abbreviation"]
+        payload["team_name"] = home_team_info["team_name"]
         payload["team_id"] = payload.pop("HOME_TEAM_ID") ##### En la tabla de games, el team_id es siempre el equipo que juega en casa
 
-        # visitor_team_info = teams_dict.get(payload["VISITOR_TEAM_ID"], {"abbreviation": "Unknown", "team_name": "Unknown"})
-        # payload["visitor_team_abbr"] = visitor_team_info["abbreviation"]
-        # payload["away_team"] = visitor_team_info["team_name"]
-        # del payload["VISITOR_TEAM_ID"]   
+        visitor_team_info = nba_teams_dict.get(payload["VISITOR_TEAM_ID"], {"abbreviation": "Unknown", "team_name": "Unknown"})
+        payload["visitor_team_id"] = payload.pop("VISITOR_TEAM_ID")  
+        payload["visitor_team_abbr"] = visitor_team_info["abbreviation"]
+        payload["away_team"] = visitor_team_info["team_name"]
+         
         return payload
     except Exception as e:
         logging.error(f"Error transforming team IDs: {e}")

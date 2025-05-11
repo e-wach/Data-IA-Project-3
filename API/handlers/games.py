@@ -15,7 +15,7 @@ def get_games(topic, seasons, fetch_all=True):
     yesterday = datetime.now() - timedelta(days=1)
     for season in seasons:
         try:
-            gamefinder = leaguegamefinder.LeagueGameFinder(season_nullable=season)
+            gamefinder = leaguegamefinder.LeagueGameFinder(league_id_nullable="00",season_nullable=season)
             games = gamefinder.get_normalized_dict()["LeagueGameFinderResults"]
             filtered_games = 0
             for game in games:
@@ -72,7 +72,7 @@ def get_games_week(topic):
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
         try:
-            scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
+            scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str, timeout=90)
             games = scoreboard.get_data_frames()[0]     
             games_list = games.to_dict(orient='records')
             for game in games_list:

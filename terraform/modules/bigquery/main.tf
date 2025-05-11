@@ -10,6 +10,15 @@ resource "google_bigquery_table" "nba_games" {
   project    = var.project_id
   schema     = file("${path.module}/schemas/schema_games.json")
   deletion_protection = false
+  range_partitioning {
+    field = "team_id"
+
+    range {
+      start    = 1610612737
+      end      = 1610612767  # IMPORTANTE: este valor es exclusivo
+      interval = 1
+    }
+  }
 }
 
 resource "google_bigquery_table" "nba_games_week" {
@@ -18,6 +27,15 @@ resource "google_bigquery_table" "nba_games_week" {
   project    = var.project_id
   schema     = file("${path.module}/schemas/schema_games_week.json")
   deletion_protection = false
+  range_partitioning {
+    field = "team_id"
+
+    range {
+      start    = 1610612737
+      end      = 1610612767  # IMPORTANTE: este valor es exclusivo
+      interval = 1
+    }
+  }
 }
 
 resource "google_bigquery_table" "nba_odds" {
