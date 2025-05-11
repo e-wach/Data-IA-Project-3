@@ -12,15 +12,16 @@ from utils.pubsub import listen_for_messages
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-PROJECT_ID         = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
-SUBSCRIPTION_NAME  = os.getenv("SUB_NBA_GAMES", "nba_games-sub")
-DATASET_ID         = os.getenv("BQ_DATASET", "nba_dataset")
-TABLE_ID           = os.getenv("BQ_TABLE", "nba_games")
+PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
+NBA_GAMES_SUB  = os.getenv("NBA_GAMES_SUB", "nba_games-sub")
+DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
+NBA_GAMES_TABLE = os.getenv("NBA_GAMES_TABLE", "nba_games")
 
 
 subscriber = pubsub_v1.SubscriberClient()
-sub_path = subscriber.subscription_path(PROJECT_ID, SUBSCRIPTION_NAME)
+sub_path = subscriber.subscription_path(PROJECT_ID, NBA_GAMES_SUB)
 bq = bigquery.Client(project=PROJECT_ID)
+
 
 # NBA GAMES (completed games)
 def callback_games(message):
@@ -37,7 +38,7 @@ def callback_games(message):
         payload["home_team"] = home
         payload["away_team"] = away
         payload["matchup_type"] = m_type
-        insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, TABLE_ID)
+        insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_GAMES_TABLE)
         message.ack()
         logging.info("Mensaje procesado correctamente.")
     except Exception as e:
@@ -47,4 +48,4 @@ def callback_games(message):
 
 
 if __name__ == "__main__":
-    listen_for_messages(callback_games, subscription_name=SUBSCRIPTION_NAME, project_id=PROJECT_ID)
+    listen_for_messages(callback_games, subscription_name=NBA_GAMES_SUB, project_id=PROJECT_ID)
