@@ -64,11 +64,11 @@ def callback_upcoming_games(message):
         game_status = get_game_status(payload["GAME_DATE"], payload["GAME_STATUS_ID"])
         payload["is_completed"] = game_status
         del payload["GAME_STATUS_ID"]
-        payload["team_id"] = payload.pop("HOME_TEAM_ID") 
-        # transform_team_id_to_abbr(payload)
+        payload = transform_team_id_to_abbr(payload)
         payload = {k.lower(): v for k, v in payload.items()}
-        print(f"Upcoming game transformed: {payload}")
+        logging.info(f"Upcoming game transformed: {payload}")
         insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_GAMES_WEEK_TABLE)
+
         message.ack()
         logging.info(f"Message processed sucessfully: {payload}.")
     except Exception as e:
