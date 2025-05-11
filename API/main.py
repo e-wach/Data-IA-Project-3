@@ -5,7 +5,6 @@ import time
 
 from handlers.teams import get_teams
 from handlers.games import get_games, get_games_week
-from handlers.stats import get_stats
 from handlers.theodds_api import get_odds_week
 
 
@@ -48,10 +47,6 @@ def historical_data(type):
             get_games(topic_games, seasons)
             logging.info("NBA historical games sent to PubSub")
             time.sleep(10)
-            # seasons = ["2022-23", "2023-24", "2024-25"]
-            # get_stats(topic_stats, seasons)
-            # logging.info("NBA historical stats sent to PubSub")
-            # time.sleep(10)
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
             time.sleep(10)
@@ -75,10 +70,6 @@ def daily_data(type):
         elif type == "upcomingGames":
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-        # elif type == "stats": ######################## SOLO HASTA ABRIL 2025
-        #     seasons = ["2024-25"]
-        #     get_stats(topic_stats, seasons, fetch_all=False)
-        #     logging.info("2024-25 NBA stats sent to PubSub")
         # elif type == "odds":
             # get_odds_week(topic_odds)
             # logging.info("NBA betting odds sent to PubSub")
@@ -89,9 +80,6 @@ def daily_data(type):
             time.sleep(10)
             get_games_week(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-            # seasons = ["2024-25"]
-            # get_stats(topic_stats, seasons)
-            # logging.info("2024-25 NBA stats sent to PubSub")
             # get_odds_week(topic_odds)
             # logging.info("NBA betting odds sent to PubSub")
         else:

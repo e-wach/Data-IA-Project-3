@@ -72,7 +72,7 @@ def get_games_week(topic):
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
         try:
-            scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
+            scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str, timeout=90)
             games = scoreboard.get_data_frames()[0]     
             games_list = games.to_dict(orient='records')
             for game in games_list:
