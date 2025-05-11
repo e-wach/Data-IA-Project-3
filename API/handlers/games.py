@@ -65,13 +65,11 @@ def get_games(topic, seasons, fetch_all=True):
 
 
 # NBA upcoming games of the week 
-########### TEAMS EN CÓDIGO / HORA EN STRING (ET)
 def get_games_week(topic):
     today = datetime.today()
-    start_of_week = today - timedelta(days=today.weekday())
-    games_this_week = []
+    upcoming_games = [] # 7 days
     for i in range(7):
-        day = start_of_week + timedelta(days=i)
+        day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
         try:
             scoreboard = scoreboardv2.ScoreboardV2(game_date=date_str)
@@ -79,10 +77,10 @@ def get_games_week(topic):
             games_list = games.to_dict(orient='records')
             for game in games_list:
                 game["GAME_DATE"] = date_str
-                games_this_week.append(game)
+                upcoming_games.append(game)
                 message = json.dumps(game)
                 publish_message(topic, message)
                 logging.info(f"Published message to topic {topic}: {message}")
         except Exception as e:
-            logging.error(f"Error al obtener juegos del {date_str}: {e}")
-    return {"status": "ok", "games_published": len(games_this_week)}, 200
+            logging.error(f"Error fetching games from date {date_str}: {e}")
+    return {"status": "ok", "games_published": len(upcoming_games)}, 200
