@@ -10,7 +10,7 @@ def insert_into_bigquery(client, record, project_id, dataset_id, table_id):
         if errors:
             logging.error(f"Error inserting into BigQuery: {errors}")
         else:
-            logging.info("Data inserted inot BigQuery sucessfully.")
+            logging.info("Data inserted intO BigQuery sucessfully.")
     except Exception as e:
         logging.error(f"Error running BigQuery function: {e}")
 
