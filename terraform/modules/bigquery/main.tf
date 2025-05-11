@@ -24,7 +24,7 @@ resource "google_bigquery_table" "nba_odds" {
   dataset_id = google_bigquery_dataset.nba.dataset_id
   table_id   = var.table_names.odds
   project    = var.project_id
-  schema     = file("${path.module}/schemas/schema_odds.json")
+  schema     = file("${path.module}/schemas/schema_theodds_api.json")
   deletion_protection = false
 }
 
