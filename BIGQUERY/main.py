@@ -10,7 +10,6 @@ from utils.pubsub import listen_for_messages
 
 from handlers.transform_games import transform_game_date, transform_matchup, get_game_status
 from handlers.transform_games_week import remove_fields, transform_season, transform_team_id_to_abbr
-# from handlers.get_teams import callback_teams, teams_dict
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -30,9 +29,6 @@ NBA_GAMES_WEEK_TABLE = os.getenv("NBA_GAMES_WEEK_TABLE", "nba_games_week")
 NBA_ODDS_TABLE = os.getenv("NBA_ODDS_TABLE", "nba_odds")
 
 
-# Subscription Pub/Sub and BigQuery Client
-subscriber = pubsub_v1.SubscriberClient()
-sub_path = subscriber.subscription_path(PROJECT_ID, NBA_GAMES_SUB)
 bq = bigquery.Client(project=PROJECT_ID)
 
 
