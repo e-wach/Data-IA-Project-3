@@ -1,9 +1,11 @@
 [
     { "name": "team_id",      "type": "INTEGER", "mode": "REQUIRED" },
     { "name": "team_name",    "type": "STRING",  "mode": "REQUIRED" },
+    { "name": "abbreviation", "type": "STRING",  "mode": "REQUIRED" },
     { "name": "nickname",     "type": "STRING",  "mode": "REQUIRED" },
     { "name": "city",         "type": "STRING",  "mode": "REQUIRED" },
     { "name": "state",        "type": "STRING",  "mode": "REQUIRED" },
     { "name": "year_founded", "type": "INTEGER", "mode": "REQUIRED" }
   ]
+  
   
