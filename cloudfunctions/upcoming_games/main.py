@@ -44,11 +44,12 @@ def transform_game_date(game_date_str):
     
 def transform_time(datetime_str):
     try:
-        datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S")
-        return datetime_obj.strftime("%H:%M:%S")
-    except ValueError:
-        logging.warning(f"Invalid datetime format: {datetime_str}")
-        return None
+        if datetime_str is None:
+            return "tbd"
+        return datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S").strftime("%H:%M:%S")
+    except Exception as e:
+        logging.warning(f"Error transforming DateTime: {e}")
+        return "tbd"
 
 def replace_null(payload):
     return {k: (0 if v is None else v) for k, v in payload.items()}
@@ -67,7 +68,7 @@ def transform_team_id_to_abbr(payload):
         payload["home_team_id_sd"] = home_team_info["team_id_sd"]
         payload["home_team_city"] = home_team_info["city"]
         payload["home_team_nickname"] = home_team_info["nickname"]
-        payload["home_team_full_name"] = f"{home_team_info['city']} {home_team_info['team_name']}".strip()
+        payload["home_team_full_name"] = home_team_info['team_name']
 
         visitor_team_info = nba_teams_dict.get(payload["AwayTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
         payload["visitor_team_id_nba"] = visitor_team_info["team_id_nba"]
@@ -76,7 +77,7 @@ def transform_team_id_to_abbr(payload):
         payload["visitor_team_name"] = visitor_team_info["team_name"]
         payload["visitor_team_city"] = visitor_team_info["city"]
         payload["visitor_team_nickname"] = visitor_team_info["nickname"]
-        payload["visitor_team_full_name"] = f"{visitor_team_info['city']} {visitor_team_info['team_name']}".strip()
+        payload["visitor_team_full_name"] = visitor_team_info['team_name']
         payload["team_id"] = payload.pop("AwayTeamID")
         payload["away_team"] = payload.pop("AwayTeam")
 
@@ -91,11 +92,11 @@ def callback_upcoming_games(cloud_event):
     try:
         payload = json.loads(base64.b64decode(cloud_event.data["message"]["data"]).decode('utf-8'))
         remove_fields(payload)
-        payload = replace_null(payload)
-        payload["datetime"] = transform_time(payload["DateTime"])
+        payload["DateTime"] = transform_time(payload["DateTime"])
         payload["GAME_DATE"] = transform_game_date(payload["GAME_DATE"])
         payload["Season"] = transform_season(payload["Season"])
         payload = transform_team_id_to_abbr(payload)
+        payload = replace_null(payload)
         table_ref = f"{PROJECT_ID}.{DATASET_ID}.{NBA_GAMES_WEEK_TABLE}"
         errors = bq.insert_rows_json(table_ref, [payload])
         if errors:
