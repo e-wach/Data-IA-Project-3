@@ -37,7 +37,7 @@ resource "null_resource" "docker_build_push_api" {
 
 ## Cloud Run Service
 resource "google_cloud_run_v2_service" "cloudrun-api" {
-    name = "cloudrun-nba-api"
+    name = "nba-api"
     location = var.region
     deletion_protection = false
     ingress = "INGRESS_TRAFFIC_ALL"

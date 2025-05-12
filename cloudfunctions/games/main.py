@@ -62,7 +62,6 @@ def callback_games(cloud_event):
         payload["away_team"] = away
         payload["matchup_type"] = m_type
         game_status = get_game_status(payload["game_date"])
-        payload["is_completed"] = game_status
         # Insert to BigQuery
         table_ref = f"{PROJECT_ID}.{DATASET_ID}.{NBA_GAMES_TABLE}"
         errors = bq.insert_rows_json(table_ref, [payload])

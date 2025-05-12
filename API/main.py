@@ -4,8 +4,9 @@ import os
 import time
 
 from handlers.teams import get_teams
-from handlers.games import get_games, get_games_week
+from handlers.games import get_games
 from handlers.theodds_api import get_odds_week
+from handlers.upcoming_gamesV2 import get_upcoming_games
 
 
 app = Flask(__name__)
@@ -29,12 +30,8 @@ def historical_data(type):
             seasons = ["2022-23", "2023-24", "2024-25"]
             get_games(topic_games, seasons)
             logging.info("NBA historical games sent to PubSub")
-        # elif type == "stats":
-        #     seasons = ["2022-23", "2023-24", "2024-25"]
-        #     get_stats(topic_stats, seasons)
-        #     logging.info("NBA historical stats sent to PubSub")
         elif type == "upcomingGames":
-            get_games_week(topic_games_week)
+            get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
         # elif type == "odds":
             # get_odds_week(topic_odds)
@@ -47,7 +44,7 @@ def historical_data(type):
             get_games(topic_games, seasons)
             logging.info("NBA historical games sent to PubSub")
             time.sleep(10)
-            get_games_week(topic_games_week)
+            get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
             time.sleep(10)
             # get_odds_week(topic_odds)
@@ -68,7 +65,7 @@ def daily_data(type):
             get_games(topic_games, seasons, fetch_all=False)
             logging.info("2024-25 NBA games sent to PubSub")
         elif type == "upcomingGames":
-            get_games_week(topic_games_week)
+            get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
         # elif type == "odds":
             # get_odds_week(topic_odds)
@@ -78,7 +75,7 @@ def daily_data(type):
             get_games(topic_games, seasons)
             logging.info("2024-25 NBA games sent to PubSub")
             time.sleep(10)
-            get_games_week(topic_games_week)
+            get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
             # get_odds_week(topic_odds)
             # logging.info("NBA betting odds sent to PubSub")
