@@ -19,10 +19,8 @@ bq = bigquery.Client(project=PROJECT_ID)
 
 def remove_fields(message):
     fields_remove = [
-        "GAME_DATE_EST", "GAME_SEQUENCE", "GAMECODE", "LIVE_PERIOD", "LIVE_PC_TIME",
-        "NATL_TV_BROADCASTER_ABBREVIATION", "HOME_TV_BROADCASTER_ABBREVIATION", 
-        "AWAY_TV_BROADCASTER_ABBREVIATION", "LIVE_PERIOD_TIME_BCAST", 
-        "ARENA_NAME", "WH_STATUS", "WNBA_COMMISSIONER_FLAG"
+        "GameEndDateTime", "Day", "StadiumID", "Updated", "GlobalAwayTeamID", 
+        "GlobalHomeTeamID", "IsClosed", "NeutralVenue", "DateTimeUTC", "SeriesInfo"
     ]
     for field in fields_remove:
         if field in message:
@@ -31,32 +29,10 @@ def remove_fields(message):
 
 def transform_season(season):
     try:
-        return f"{season}-{str(int(season) + 1)[2:]}"
+        return f"{int(season) - 1}-{str(season)[-2:]}"
     except Exception as e:
         logging.error(f"Error transforming season format: {e}")
         return season
-
-
-def transform_team_id_to_abbr(payload):
-    try:
-        with open("nba_teams.json", 'r') as f:
-            nba_teams = json.load(f)
-            nba_teams_dict = {team["team_id"]: team for team in nba_teams}
-            logging.debug(f"Datos cargados desde JSON: {nba_teams}") 
-        home_team_info = nba_teams_dict.get(payload["HOME_TEAM_ID"], {"abbreviation": "Unknown", "team_name": "Unknown"})
-        payload["team_abbr"] = home_team_info["abbreviation"]
-        payload["team_name"] = home_team_info["team_name"]
-        payload["team_id"] = payload.pop("HOME_TEAM_ID") ##### En la tabla de games, el team_id es siempre el equipo que juega en casa
-
-        visitor_team_info = nba_teams_dict.get(payload["VISITOR_TEAM_ID"], {"abbreviation": "Unknown", "team_name": "Unknown"})
-        payload["visitor_team_id"] = payload.pop("VISITOR_TEAM_ID")  
-        payload["visitor_team_abbr"] = visitor_team_info["abbreviation"]
-        payload["away_team"] = visitor_team_info["team_name"]
-         
-        return payload
-    except Exception as e:
-        logging.error(f"Error transforming team IDs: {e}")
-        return None
 
 
 def transform_game_date(game_date_str):
@@ -66,32 +42,57 @@ def transform_game_date(game_date_str):
         logging.warning(f"Invalid game date format: {game_date_str}")
         return None
     
-
-def get_game_status(game_date_str, status_id=None):
-    current_date = datetime.today().date()
-    if status_id is not None:
-        return status_id != 1
+def transform_time(datetime_str):
     try:
-        game_date = datetime.strptime(game_date_str, "%Y-%m-%d").date()
-        return game_date < current_date 
-    except ValueError:
-        logging.error(f"Error trying to convert game date: {game_date_str}")
-        return None
+        if datetime_str is None:
+            return "tbd"
+        return datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S").strftime("%H:%M:%S")
+    except Exception as e:
+        logging.warning(f"Error transforming DateTime: {e}")
+        return "tbd"
 
+def replace_null(payload):
+    return {k: (0 if v is None else v) for k, v in payload.items()}
+    
+
+def transform_team_id_to_abbr(payload):
+    try:
+        with open("combined_teams.json", 'r') as f:
+            nba_teams = json.load(f)
+            nba_teams_dict = {team["team_id_sd"]: team for team in nba_teams}  # Usamos team_id_sd como clave
+        
+        home_team_info = nba_teams_dict.get(payload["HomeTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
+        payload["home_team_abbr"] = home_team_info["abbreviation"]
+        payload["home_team_name"] = home_team_info["team_name"]
+        payload["home_team_id_nba"] = home_team_info["team_id_nba"]
+        payload["home_team_id_sd"] = home_team_info["team_id_sd"]
+        payload["home_team_nickname"] = home_team_info["nickname"]
+
+        visitor_team_info = nba_teams_dict.get(payload["AwayTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
+        payload["visitor_team_id_nba"] = visitor_team_info["team_id_nba"]
+        payload["visitor_team_id_sd"] = visitor_team_info["team_id_sd"]
+        payload["visitor_team_abbr"] = visitor_team_info["abbreviation"]
+        payload["visitor_team_name"] = visitor_team_info["team_name"]
+        payload["visitor_team_nickname"] = visitor_team_info["nickname"]
+        payload["team_id"] = payload.pop("AwayTeamID")
+        payload["away_team"] = payload.pop("AwayTeam")
+
+        return payload
+
+    except Exception as e:
+        logging.error(f"Error transforming team IDs: {e}")
+        return None
 
 @functions_framework.cloud_event
 def callback_upcoming_games(cloud_event):
     try:
         payload = json.loads(base64.b64decode(cloud_event.data["message"]["data"]).decode('utf-8'))
         remove_fields(payload)
+        payload["DateTime"] = transform_time(payload["DateTime"])
         payload["GAME_DATE"] = transform_game_date(payload["GAME_DATE"])
-        payload["SEASON"] = transform_season(payload["SEASON"])
-        game_status = get_game_status(payload["GAME_DATE"], payload["GAME_STATUS_ID"])
-        payload["is_completed"] = game_status
-        del payload["GAME_STATUS_ID"]
+        payload["Season"] = transform_season(payload["Season"])
         payload = transform_team_id_to_abbr(payload)
-        payload = {k.lower(): v for k, v in payload.items()}
-
+        payload = replace_null(payload)
         table_ref = f"{PROJECT_ID}.{DATASET_ID}.{NBA_GAMES_WEEK_TABLE}"
         errors = bq.insert_rows_json(table_ref, [payload])
         if errors:
