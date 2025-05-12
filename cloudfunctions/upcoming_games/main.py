@@ -66,18 +66,14 @@ def transform_team_id_to_abbr(payload):
         payload["home_team_name"] = home_team_info["team_name"]
         payload["home_team_id_nba"] = home_team_info["team_id_nba"]
         payload["home_team_id_sd"] = home_team_info["team_id_sd"]
-        payload["home_team_city"] = home_team_info["city"]
         payload["home_team_nickname"] = home_team_info["nickname"]
-        payload["home_team_full_name"] = home_team_info['team_name']
 
         visitor_team_info = nba_teams_dict.get(payload["AwayTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
         payload["visitor_team_id_nba"] = visitor_team_info["team_id_nba"]
         payload["visitor_team_id_sd"] = visitor_team_info["team_id_sd"]
         payload["visitor_team_abbr"] = visitor_team_info["abbreviation"]
         payload["visitor_team_name"] = visitor_team_info["team_name"]
-        payload["visitor_team_city"] = visitor_team_info["city"]
         payload["visitor_team_nickname"] = visitor_team_info["nickname"]
-        payload["visitor_team_full_name"] = visitor_team_info['team_name']
         payload["team_id"] = payload.pop("AwayTeamID")
         payload["away_team"] = payload.pop("AwayTeam")
 
