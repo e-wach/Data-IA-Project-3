@@ -19,7 +19,7 @@ bq = bigquery.Client(project=PROJECT_ID)
 
 def remove_fields(message):
     fields_remove = [
-        "GameEndDateTime", "Day", "StadiumID", "Updated", "GlobalAwayTeamID", 
+        "GameEndDateTime", "Day", "StadiumID", "Updated", "GlobalGameID", "GlobalAwayTeamID", 
         "GlobalHomeTeamID", "IsClosed", "NeutralVenue", "DateTimeUTC", "SeriesInfo"
     ]
     for field in fields_remove:
@@ -63,19 +63,21 @@ def transform_team_id_to_abbr(payload):
         
         home_team_info = nba_teams_dict.get(payload["HomeTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
         payload["home_team_abbr"] = home_team_info["abbreviation"]
-        payload["home_team_name"] = home_team_info["team_name"]
+        del payload["HomeTeam"]
+        # payload["home_team_name"] = home_team_info["team_name"]
         payload["home_team_id_nba"] = home_team_info["team_id_nba"]
-        payload["home_team_id_sd"] = home_team_info["team_id_sd"]
-        payload["home_team_nickname"] = home_team_info["nickname"]
+        # payload["home_team_id_sd"] = home_team_info["team_id_sd"]
+        # payload["home_team_nickname"] = home_team_info["nickname"]
 
         visitor_team_info = nba_teams_dict.get(payload["AwayTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
-        payload["visitor_team_id_nba"] = visitor_team_info["team_id_nba"]
-        payload["visitor_team_id_sd"] = visitor_team_info["team_id_sd"]
-        payload["visitor_team_abbr"] = visitor_team_info["abbreviation"]
-        payload["visitor_team_name"] = visitor_team_info["team_name"]
-        payload["visitor_team_nickname"] = visitor_team_info["nickname"]
-        payload["team_id"] = payload.pop("AwayTeamID")
-        payload["away_team"] = payload.pop("AwayTeam")
+        payload["away_team_id_nba"] = visitor_team_info["team_id_nba"]
+        # payload["away_team_id_sd"] = visitor_team_info["team_id_sd"]
+        payload["away_team_abbr"] = visitor_team_info["abbreviation"]
+        del payload["AwayTeam"]
+        # payload["visitor_team_name"] = visitor_team_info["team_name"]
+        payload["away_team_nickname"] = visitor_team_info["nickname"]
+        # payload["away_team_id"] = payload.pop("AwayTeamID")
+        # payload["away_team"] = payload.pop("AwayTeam")
 
         return payload
 
