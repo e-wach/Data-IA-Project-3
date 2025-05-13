@@ -4,8 +4,8 @@ import os
 import time
 
 from handlers.theodds_api import get_odds_week
-from API.handlers.upcoming_games import get_upcoming_games
-from API.handlers.games import latest_games, yesterday_games
+from handlers.upcoming_games import get_upcoming_games
+from handlers.games import latest_games, yesterday_games
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -27,9 +27,9 @@ def historical_data(type):
         elif type == "upcomingGames":
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-        # elif type == "odds":
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+        elif type == "odds":
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         elif type == "all":
             latest_games(topic_games)
             logging.info("NBA lastest games sent to PubSub")
@@ -37,8 +37,8 @@ def historical_data(type):
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
             time.sleep(10)
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         else:
             return jsonify({"error": "Invalid type provided."}), 400
         return {"status": "success", "message": f"{type} data sent to PubSub"}, 200
@@ -56,17 +56,17 @@ def daily_data(type):
         elif type == "upcomingGames":
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-        # elif type == "odds":
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+        elif type == "odds":
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         elif type == "all":
             yesterday_games(topic_games)
             logging.info("2024-25 NBA games sent to PubSub")
             time.sleep(10)
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         else:
             return jsonify({"error": "Invalid type provided."}), 400
         return {"status": "success", "message": f"{type} data sent to PubSub"}, 200

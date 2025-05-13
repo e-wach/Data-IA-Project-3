@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 today = datetime.date.today()
 dates = [today + datetime.timedelta(days=i) for i in range(7)]
 
-API_KEY_SD = os.getenv("API_KEY", "default_key")
+API_KEY_SD = os.getenv("API_KEY_SD", "default_key")
 
 def get_upcoming_games(topic):
     today = datetime.date.today()
