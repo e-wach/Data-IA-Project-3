@@ -49,10 +49,14 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
                 name = "PROJECT_ID"
                 value = var.project_id
             }
-            # env {
-            #     name = "API_KEY"
-            #     value = var.api_key_odds
-            # }
+            env {
+                name = "API_KEY_ODDS"
+                value = var.api_key_odds
+            }
+            env {
+                name = "API_KEY_SD"
+                value = var.api_key_sd
+            }
             dynamic "env" {
                 for_each = var.topic_names
                 content {

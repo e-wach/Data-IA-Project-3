@@ -18,7 +18,6 @@
     { "name": "reb",          "type": "INTEGER", "mode": "NULLABLE" },
     { "name": "ast",          "type": "INTEGER", "mode": "NULLABLE" },
     { "name": "tov",          "type": "INTEGER", "mode": "NULLABLE" },
-    { "name": "plus_minus",   "type": "FLOAT",   "mode": "NULLABLE" },
-    { "name": "is_completed",  "type": "BOOLEAN",  "mode": "NULLABLE"}
-  ]
+    { "name": "plus_minus",   "type": "FLOAT",   "mode": "NULLABLE" }
+    ]
   

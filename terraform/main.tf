@@ -7,19 +7,19 @@ module "api" {
   topic_names = var.topic_names
   region = var.region
   project_id = var.project_id
-  # api_key_odds = var.api_key_odds
+  api_key_odds = var.api_key_odds
+  api_key_sd = var.api_key_sd
 }
 
-module "bigquery" {
-  source     = "./modules/bigquery"
-  project_id = var.project_id
-  dataset_id = "nba_dataset"
-  region = var.region
+# module "bigquery" {
+#   source     = "./modules/bigquery"
+#   project_id = var.project_id
+#   dataset_id = var.dataset_id
+#   region = var.region
+#   table_names = var.table_names
+# }
 
-  table_names = {
-    games        = "nba_games"
-    games_week   = "nba_games_week"
-    odds         = "nba_odds"
-    teams        = "nba_teams"
-  }
+module "cloudsq" {
+  source = "./modules/cloudsql"
+  region = var.region
 }

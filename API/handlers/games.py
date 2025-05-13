@@ -10,7 +10,7 @@ from .publisher import publish_message
 logging.basicConfig(level=logging.DEBUG)
 
 
-API_KEY = os.getenv("API_KEY", "default_key")
+API_KEY_SD = os.getenv("API_KEY_SD", "default_key")
 
 
 def daterange(start_date, end_date):
@@ -21,7 +21,7 @@ def daterange(start_date, end_date):
 def process_publish(topic, date_str):
     url = f"https://api.sportsdata.io/v3/nba/scores/json/TeamGameStatsByDate/{date_str}"
     headers = {
-            "Ocp-Apim-Subscription-Key": API_KEY
+            "Ocp-Apim-Subscription-Key": API_KEY_SD
             }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
@@ -30,27 +30,27 @@ def process_publish(topic, date_str):
             logging.info("No dara found for the given date.")
             return
         for game in data:
-            game_data = {
+            game_data = { ################ CAMBIAR LAS KEY PARA QUE COINCIDA CON EL HISTÓRICO
                 "TeamID": game.get("TeamID", 0),
-                "StatID": game.get("StatID", 0),
-                "SeasonType": game.get("SeasonType", 0),
-                "Season": game.get("Season", 0),
-                "Name": game.get("Name", ""),
-                "Team": game.get("Team", ""),
-                "Wins": game.get("Wins", 0),
+                # "StatID": game.get("StatID", 0),
+                # "SeasonType": game.get("SeasonType", 0),
+                "season": game.get("Season", 0),
+                "team_name": game.get("Name", ""),
+                "team_abbr": game.get("Team", ""),
+                "Wins": game.get("Wins", 0), ### cambiar a WL = L O W
                 "Losses": game.get("Losses", 0),
                 "Possessions": game.get("Possessions", 0),
-                "GlobalTeamID": game.get("GlobalTeamID", 0),
-                "GameID": game.get("GameID", 0),
+                # "GlobalTeamID": game.get("GlobalTeamID", 0),
+                "game_id": game.get("GameID", 0),
                 "OpponentID": game.get("OpponentID", 0),
-                "Opponent": game.get("Opponent", ""),
+                "away_team": game.get("Opponent", ""),
                 "Day": game.get("Day", ""),
                 "DateTime": game.get("DateTime", ""),
                 "HomeOrAway": game.get("HomeOrAway", ""),
-                "IsGameOver": game.get("IsGameOver", False),
+                # "IsGameOver": game.get("IsGameOver", False),
                 "GlobalGameID": game.get("GlobalGameID", 0),
                 "GlobalOpponentID": game.get("GlobalOpponentID", 0),
-                "Updated": game.get("Updated", ""),
+                # "Updated": game.get("Updated", ""),
                 "Games": game.get("Games", 0),
                 "FantasyPoints": game.get("FantasyPoints", 0),
                 "Minutes": game.get("Minutes", 0),
