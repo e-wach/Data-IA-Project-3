@@ -1,5 +1,5 @@
 resource "google_sql_database_instance" "postgres_instance" {
-  name             = "nba_postgres"
+  name             = "nbapostgres"
   region           = var.region
   database_version = "POSTGRES_15"
   deletion_protection = false
