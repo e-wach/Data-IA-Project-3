@@ -4,17 +4,84 @@ from datetime import datetime
 import os
 import logging
 import json
-from google.cloud import bigquery
+import psycopg2
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
 PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
-DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
-NBA_GAMES_WEEK_TABLE = os.getenv("NBA_GAMES_WEEK_TABLE", "nba_games_week")
+SQL_DB = os.getenv("DB_NAME", "nba_database")
+SQL_USER = os.getenv("USER", "nba_user")
+SQL_PASS =  os.getenv("SQL_PASS", "dataproject3")
+SQL_HOST = os.getenv("SQL_HOST", "34.22.170.250")
 
-bq = bigquery.Client(project=PROJECT_ID)
+
+def get_postgres_connection():
+    conn = psycopg2.connect(
+        dbname=SQL_DB,
+        user=SQL_USER,
+        password=SQL_PASS,
+        host=SQL_HOST,
+        port="5432"
+    )
+    create_table_if_not_exists(conn)
+    return conn
+
+def create_table_if_not_exists(conn):
+    try:
+        cursor = conn.cursor()
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS nba_games_week (
+    GameID INTEGER PRIMARY KEY,
+    Season VARCHAR(10),
+    SeasonType INTEGER,
+    Status VARCHAR(50),
+    GAME_DATE DATE,
+    DateTime VARCHAR(10),
+    HomeTeamID INTEGER,
+    home_team_abbr VARCHAR(10),
+    home_team_id_nba BIGINT,
+    AwayTeamID INTEGER,
+    away_team_abbr VARCHAR(10),
+    away_team_id_nba BIGINT,
+    AwayTeamScore INTEGER,
+    HomeTeamScore INTEGER
+);
+        """
+        cursor.execute(create_table_query)
+        conn.commit()
+        cursor.close()
+        logging.info("Table nba_games_week created (if it didn't exist).")
+    except Exception as e:
+        logging.error(f"Error creating table: {e}")
+        raise
+
+
+def insert_postgres(payload):
+    try:
+        conn = get_postgres_connection()
+        cursor = conn.cursor()
+        insert_query = """
+INSERT INTO nba_games_week (
+  GameID, Season, SeasonType, Status, GAME_DATE, DateTime, 
+  home_team_id_nba,HomeTeamID, home_team_abbr, away_team_id_nba, 
+  AwayTeamID, away_team_abbr,AwayTeamScore, HomeTeamScore)
+VALUES (%(GameID)s, %(Season)s, %(SeasonType)s, %(Status)s,
+  %(GAME_DATE)s, %(DateTime)s, %(home_team_id_nba)s, 
+  %(HomeTeamID)s, %(home_team_abbr)s, %(away_team_id_nba)s,
+  %(AwayTeamID)s, %(away_team_abbr)s, %(AwayTeamScore)s, %(HomeTeamScore)s
+);
+        """
+        cursor.execute(insert_query, payload)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        logging.info("Data inserted into PostgreSQL.")
+    except Exception as e:
+        logging.error(f"Error inserting data PostgreSQL: {e}")
+        raise
+
 
 
 def remove_fields(message):
@@ -64,23 +131,13 @@ def transform_team_id_to_abbr(payload):
         home_team_info = nba_teams_dict.get(payload["HomeTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
         payload["home_team_abbr"] = home_team_info["abbreviation"]
         del payload["HomeTeam"]
-        # payload["home_team_name"] = home_team_info["team_name"]
         payload["home_team_id_nba"] = home_team_info["team_id_nba"]
-        # payload["home_team_id_sd"] = home_team_info["team_id_sd"]
-        # payload["home_team_nickname"] = home_team_info["nickname"]
-
         visitor_team_info = nba_teams_dict.get(payload["AwayTeamID"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
         payload["away_team_id_nba"] = visitor_team_info["team_id_nba"]
-        # payload["away_team_id_sd"] = visitor_team_info["team_id_sd"]
         payload["away_team_abbr"] = visitor_team_info["abbreviation"]
         del payload["AwayTeam"]
-        # payload["visitor_team_name"] = visitor_team_info["team_name"]
         payload["away_team_nickname"] = visitor_team_info["nickname"]
-        # payload["away_team_id"] = payload.pop("AwayTeamID")
-        # payload["away_team"] = payload.pop("AwayTeam")
-
         return payload
-
     except Exception as e:
         logging.error(f"Error transforming team IDs: {e}")
         return None
@@ -95,13 +152,7 @@ def callback_upcoming_games(cloud_event):
         payload["Season"] = transform_season(payload["Season"])
         payload = transform_team_id_to_abbr(payload)
         payload = replace_null(payload)
-        table_ref = f"{PROJECT_ID}.{DATASET_ID}.{NBA_GAMES_WEEK_TABLE}"
-        errors = bq.insert_rows_json(table_ref, [payload])
-        if errors:
-            logging.error(f"Error inserting into BigQuery: {errors}")
-        else:
-            logging.info("Data inserted into BigQuery sucessfully.")
-        logging.info("NBA upcoming games processed sucessfully.")
+        insert_postgres(payload)
     except Exception as e:
         logging.error(f"Error trying to process NBA upcoming teams: {e}")
         raise
