@@ -3,11 +3,9 @@ import logging
 import os
 import time
 
-from handlers.teams import get_teams
-from handlers.games import get_games
 from handlers.theodds_api import get_odds_week
-from handlers.upcoming_gamesV2 import get_upcoming_games
-
+from handlers.upcoming_games import get_upcoming_games
+from handlers.games import latest_games, yesterday_games
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -16,39 +14,31 @@ logging.basicConfig(level=logging.DEBUG)
 topic_teams = os.getenv("TOPIC_nba_teams", "nba_teams")
 topic_games = os.getenv("TOPIC_nba_games", "nba_games")
 topic_games_week = os.getenv("TOPIC_nba_games_week", "nba_games_week")
-# topic_stats = os.getenv("TOPIC_games_stats", "games_stats")
 topic_odds = os.getenv("TOPIC_odds_week", "odds_week")
 
 
 @app.route("/setup/<string:type>", methods=["POST"])
 def historical_data(type):
     try:
-        if type == "teams":
-            get_teams(topic_teams)
-            logging.info("NBA teams sent to PubSub")
-        elif type == "games":
-            seasons = ["2022-23", "2023-24", "2024-25"]
-            get_games(topic_games, seasons)
-            logging.info("NBA historical games sent to PubSub")
+        if type == "games":
+            start_date_str = "2025-05-12"
+            latest_games(topic_games, start_date_str)
+            logging.info("NBA lastest games sent to PubSub")
         elif type == "upcomingGames":
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-        # elif type == "odds":
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+        elif type == "odds":
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         elif type == "all":
-            get_teams(topic_teams)
-            logging.info("NBA teams sent to PubSub")
-            time.sleep(10)
-            seasons = ["2022-23", "2023-24", "2024-25"]
-            get_games(topic_games, seasons)
-            logging.info("NBA historical games sent to PubSub")
+            latest_games(topic_games)
+            logging.info("NBA lastest games sent to PubSub")
             time.sleep(10)
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
             time.sleep(10)
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         else:
             return jsonify({"error": "Invalid type provided."}), 400
         return {"status": "success", "message": f"{type} data sent to PubSub"}, 200
@@ -61,24 +51,22 @@ def historical_data(type):
 def daily_data(type):
     try:
         if type == "games":
-            seasons = ["2024-25"]
-            get_games(topic_games, seasons, fetch_all=False)
+            yesterday_games(topic_games)
             logging.info("2024-25 NBA games sent to PubSub")
         elif type == "upcomingGames":
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-        # elif type == "odds":
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+        elif type == "odds":
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         elif type == "all":
-            seasons = ["2024-25"]
-            get_games(topic_games, seasons)
+            yesterday_games(topic_games)
             logging.info("2024-25 NBA games sent to PubSub")
             time.sleep(10)
             get_upcoming_games(topic_games_week)
             logging.info("NBA upcoming games sent to PubSub")
-            # get_odds_week(topic_odds)
-            # logging.info("NBA betting odds sent to PubSub")
+            get_odds_week(topic_odds)
+            logging.info("NBA betting odds sent to PubSub")
         else:
             return jsonify({"error": "Invalid type provided."}), 400
         return {"status": "success", "message": f"{type} data sent to PubSub"}, 200

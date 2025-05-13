@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 today = datetime.date.today()
 dates = [today + datetime.timedelta(days=i) for i in range(7)]
 
-API_KEY = os.getenv("API_KEY", "default_key")
+API_KEY_SD = os.getenv("API_KEY_SD", "default_key")
 
 def get_upcoming_games(topic):
     today = datetime.date.today()
@@ -22,7 +22,7 @@ def get_upcoming_games(topic):
             date_str = date.strftime("%Y-%m-%d")
             url = f"https://api.sportsdata.io/v3/nba/scores/json/ScoresBasic/{date_str}"
             headers = {
-                "Ocp-Apim-Subscription-Key": API_KEY
+                "Ocp-Apim-Subscription-Key": API_KEY_SD
             }
             response = requests.get(url, headers=headers)
             if response.status_code == 200:

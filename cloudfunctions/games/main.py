@@ -25,27 +25,6 @@ def transform_game_date(game_date_str):
         return None
 
 
-def transform_matchup(matchup):
-    if "vs." in matchup:
-        home_team, away_team = matchup.split(" vs.")
-        return home_team.strip(), away_team.strip(), "home"
-    elif "@" in matchup:
-        away_team, home_team = matchup.split(" @")
-        return home_team.strip(), away_team.strip(), "away"
-    else:
-        return matchup, matchup, None
-    
-
-def get_game_status(game_date_str, status_id=None):
-    current_date = datetime.today().date()
-    if status_id is not None:
-        return status_id != 1
-    try:
-        game_date = datetime.strptime(game_date_str, "%Y-%m-%d").date()
-        return game_date < current_date 
-    except ValueError:
-        logging.error(f"Error trying to convert game date: {game_date_str}")
-        return None
 
 
 # NBA TEAMS
@@ -57,11 +36,6 @@ def callback_games(cloud_event):
             logging.warning("Missing fields.")
             return
         payload["game_date"] = transform_game_date(payload["game_date"])
-        home, away, m_type = transform_matchup(payload["matchup"])
-        payload["home_team"] = home
-        payload["away_team"] = away
-        payload["matchup_type"] = m_type
-        game_status = get_game_status(payload["game_date"])
         # Insert to BigQuery
         table_ref = f"{PROJECT_ID}.{DATASET_ID}.{NBA_GAMES_TABLE}"
         errors = bq.insert_rows_json(table_ref, [payload])

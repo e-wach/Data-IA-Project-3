@@ -8,7 +8,7 @@ from .publisher import publish_message
 
 logging.basicConfig(level=logging.INFO)
 
-API_KEY = os.getenv('API_KEY', 'default-key')
+API_KEY_ODDS = os.getenv('API_KEY_ODDS', 'default-key')
 
 # Call to The Odds API
 def fetch_odds_data(): 
@@ -22,7 +22,7 @@ def fetch_odds_data():
         odds_response = requests.get(
             f'https://api.the-odds-api.com/v4/sports/{SPORT}/odds',
             params={
-                'api_key': API_KEY,
+                'api_key': API_KEY_ODDS,
                 'regions': REGIONS,
                 'markets': MARKETS,
                 'oddsFormat': ODDS_FORMAT,
