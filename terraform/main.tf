@@ -11,15 +11,15 @@ module "api" {
   api_key_sd = var.api_key_sd
 }
 
-# module "bigquery" {
-#   source     = "./modules/bigquery"
-#   project_id = var.project_id
-#   dataset_id = var.dataset_id
-#   region = var.region
-#   table_names = var.table_names
-# }
+module "bigquery" {
+  source     = "./modules/bigquery"
+  project_id = var.project_id
+  dataset_id = var.dataset_id
+  region = var.region
+  table_names = var.table_names
+}
 
-module "cloudsq" {
+module "cloudsql" {
   source = "./modules/cloudsql"
   region = var.region
 }
