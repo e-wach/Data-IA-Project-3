@@ -59,6 +59,11 @@ def insert_postgres(payload):
             db_payload["bookmakers"] = json.dumps(db_payload["bookmakers"])
         with get_postgres_connection() as conn:
             with conn.cursor() as cursor:
+                delete_query = """
+                DELETE FROM nba_games_week 
+                WHERE created_at < NOW() - INTERVAL '1 day';
+                """
+                cursor.execute(delete_query)
                 insert_query = """
                 INSERT INTO game_odds (game_id, home_team, away_team, bookmakers)
                 VALUES (
