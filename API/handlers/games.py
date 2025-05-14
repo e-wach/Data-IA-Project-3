@@ -106,9 +106,8 @@ def process_publish(topic, date_str):
                 "plus_minus": game.get("PlusMinus", 0),
                 "double_doubles": game.get("DoubleDoubles", 0),
                 "triple_doubles": game.get("TripleDoubles", 0),
-                "fantasy_points_fantasydraft": game.get("FantasyPointsFantasyDraft", 0),
-                "is_closed": game.get("IsClosed", False)
-            }
+                "fantasy_points_fantasydraft": game.get("FantasyPointsFantasyDraft", 0)            
+                }
         if game_data:
             try:
                 message = json.dumps(game_data)
