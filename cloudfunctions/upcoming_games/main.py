@@ -14,7 +14,7 @@ PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
 SQL_DB = os.getenv("DB_NAME", "nba_database")
 SQL_USER = os.getenv("USER", "nba_user")
 SQL_PASS =  os.getenv("SQL_PASS", "dataproject3")
-SQL_HOST = os.getenv("SQL_HOST", "34.22.170.250")
+SQL_HOST = os.getenv("SQL_HOST", "default_host")
 
 
 def get_postgres_connection():
@@ -46,7 +46,8 @@ def create_table_if_not_exists(conn):
     away_team_abbr VARCHAR(10),
     away_team_id_nba BIGINT,
     AwayTeamScore INTEGER,
-    HomeTeamScore INTEGER
+    HomeTeamScore INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
         """
         cursor.execute(create_table_query)
@@ -62,16 +63,21 @@ def insert_postgres(payload):
     try:
         conn = get_postgres_connection()
         cursor = conn.cursor()
+        delete_query = """
+        DELETE FROM nba_games_week 
+        WHERE created_at < NOW() - INTERVAL '1 day';
+        """
+        cursor.execute(delete_query)
         insert_query = """
-INSERT INTO nba_games_week (
-  GameID, Season, SeasonType, Status, GAME_DATE, DateTime, 
-  home_team_id_nba,HomeTeamID, home_team_abbr, away_team_id_nba, 
-  AwayTeamID, away_team_abbr,AwayTeamScore, HomeTeamScore)
-VALUES (%(GameID)s, %(Season)s, %(SeasonType)s, %(Status)s,
-  %(GAME_DATE)s, %(DateTime)s, %(home_team_id_nba)s, 
-  %(HomeTeamID)s, %(home_team_abbr)s, %(away_team_id_nba)s,
-  %(AwayTeamID)s, %(away_team_abbr)s, %(AwayTeamScore)s, %(HomeTeamScore)s
-);
+        INSERT INTO nba_games_week (
+        GameID, Season, SeasonType, Status, GAME_DATE, DateTime, 
+        home_team_id_nba,HomeTeamID, home_team_abbr, away_team_id_nba, 
+        AwayTeamID, away_team_abbr,AwayTeamScore, HomeTeamScore)
+        VALUES (%(GameID)s, %(Season)s, %(SeasonType)s, %(Status)s,
+        %(GAME_DATE)s, %(DateTime)s, %(home_team_id_nba)s, 
+        %(HomeTeamID)s, %(home_team_abbr)s, %(away_team_id_nba)s,
+        %(AwayTeamID)s, %(away_team_abbr)s, %(AwayTeamScore)s, %(HomeTeamScore)s
+        );
         """
         cursor.execute(insert_query, payload)
         conn.commit()
