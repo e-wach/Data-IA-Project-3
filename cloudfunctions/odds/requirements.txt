@@ -1,2 +1,2 @@
-google-cloud-bigquery
 functions-framework==3.*
+psycopg2-binary

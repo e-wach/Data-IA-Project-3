@@ -46,10 +46,10 @@ resource "google_bigquery_table" "nba_games" {
 #   deletion_protection = false
 # }
 
-resource "google_bigquery_table" "nba_teams" {
-  dataset_id = google_bigquery_dataset.nba.dataset_id
-  table_id   = var.table_names.teams
-  project    = var.project_id
-  schema     = file("${path.module}/schemas/schema_teams.json")
-  deletion_protection = false
-}
+# resource "google_bigquery_table" "nba_teams" {
+#   dataset_id = google_bigquery_dataset.nba.dataset_id
+#   table_id   = var.table_names.teams
+#   project    = var.project_id
+#   schema     = file("${path.module}/schemas/schema_teams.json")
+#   deletion_protection = false
+# }
