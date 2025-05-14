@@ -20,17 +20,29 @@ def daterange(start_date, end_date):
 
 def process_publish(topic, date_str):
     url = f"https://api.sportsdata.io/v3/nba/scores/json/TeamGameStatsByDate/{date_str}"
+    url_add = f"https://api.sportsdata.io/v3/nba/scores/json/GamesByDate/{date_str}"
     headers = {
             "Ocp-Apim-Subscription-Key": API_KEY_SD
             }
     response = requests.get(url, headers=headers)
-    if response.status_code == 200:
+    response_add = requests.get(url_add, headers=headers)
+    
+    if response.status_code == 200 and response_add.status_code == 200:
         data = response.json()
-        if not data:
-            logging.info("No data found for the given date.")
-            return
-        for game in data:
-            game_data = {
+        extra_data = response_add.json()
+        extra_data_map = {g["GameID"]: g for g in extra_data}
+    if not data:
+        logging.info("No data found for the given date.")
+        return
+    for game in data:
+        extra = extra_data_map.get(game.get("GameID"), {})
+        away_team_score = extra.get("AwayTeamScore", 0)
+        home_team_score = extra.get("HomeTeamScore", 0)
+        if game.get("HomeOrAway") == "HOME":
+            points = home_team_score
+        else:
+            points = away_team_score
+        game_data = {
                 "team_id_sd": game.get("TeamID", 0),
                 # "StatID": game.get("StatID", 0),
                 # "SeasonType": game.get("SeasonType", 0),
@@ -39,6 +51,7 @@ def process_publish(topic, date_str):
                 "team_abbr": game.get("Team", ""),
                 "wins": game.get("Wins", 0), ### cambiar a WL = L O W
                 "losses": game.get("Losses", 0),
+                "points": points,
                 "possessions": game.get("Possessions", 0),
                 # "GlobalTeamID": game.get("GlobalTeamID", 0),
                 "game_id": game.get("GameID", 0),
@@ -79,7 +92,6 @@ def process_publish(topic, date_str):
                 "blocked_shots": game.get("BlockedShots", 0),
                 "turnovers": game.get("Turnovers", 0),
                 "personal_fouls": game.get("PersonalFouls", 0),
-                "points": game.get("Points", 0),
                 "true_shooting_attempts": game.get("TrueShootingAttempts", 0),
                 "true_shooting_percentage": game.get("TrueShootingPercentage", 0),
                 "player_efficiency_rating": game.get("PlayerEfficiencyRating", None),
@@ -96,16 +108,16 @@ def process_publish(topic, date_str):
                 "triple_doubles": game.get("TripleDoubles", 0),
                 "fantasy_points_fantasydraft": game.get("FantasyPointsFantasyDraft", 0),
                 "is_closed": game.get("IsClosed", False)
-}
-            if game_data:
-                try:
-                    message = json.dumps(game_data)
-                    publish_message(topic, message)
-                    logging.info(f"Published message to topic {topic}: {message}")
-                except Exception as e:
-                    logging.error(f"Error publishing message for game {game.get('GameID')}: {e}")
-            else:
-                logging.warning(f"Invalid data for game {game.get('GameID')}, skipping.")
+            }
+        if game_data:
+            try:
+                message = json.dumps(game_data)
+                publish_message(topic, message)
+                logging.info(f"Published message to topic {topic}: {message}")
+            except Exception as e:
+                logging.error(f"Error publishing message for game {game.get('GameID')}: {e}")
+        else:
+            logging.warning(f"Invalid data for game {game.get('GameID')}, skipping.")
     else:
         logging.error(f"Error calling API {url}: {response.status_code}")
 

@@ -1,0 +1,272 @@
+[
+  {
+    "team_id_nba": 1610612764,
+    "team_id_sd": 1,
+    "abbreviation": "WAS",
+    "nickname": "Wizards",
+    "team_name": "Washington Wizards",
+    "city": "Washington",
+    "name": "Wizards"
+  },
+  {
+    "team_id_nba": 1610612766,
+    "team_id_sd": 2,
+    "abbreviation": "CHA",
+    "nickname": "Hornets",
+    "team_name": "Charlotte Hornets",
+    "city": "Charlotte",
+    "name": "Hornets"
+  },
+  {
+    "team_id_nba": 1610612737,
+    "team_id_sd": 3,
+    "abbreviation": "ATL",
+    "nickname": "Hawks",
+    "team_name": "Atlanta Hawks",
+    "city": "Atlanta",
+    "name": "Hawks"
+  },
+  {
+    "team_id_nba": 1610612748,
+    "team_id_sd": 4,
+    "abbreviation": "MIA",
+    "nickname": "Heat",
+    "team_name": "Miami Heat",
+    "city": "Miami",
+    "name": "Heat"
+  },
+  {
+    "team_id_nba": 1610612753,
+    "team_id_sd": 5,
+    "abbreviation": "ORL",
+    "nickname": "Magic",
+    "team_name": "Orlando Magic",
+    "city": "Orlando",
+    "name": "Magic"
+  },
+  {
+    "team_id_nba": 1610612752,
+    "team_id_sd": 6,
+    "abbreviation": "NYK",
+    "nickname": "Knicks",
+    "team_name": "New York Knicks",
+    "city": "New York",
+    "name": "Knicks"
+  },
+  {
+    "team_id_nba": 1610612755,
+    "team_id_sd": 7,
+    "abbreviation": "PHI",
+    "nickname": "76ers",
+    "team_name": "Philadelphia 76ers",
+    "city": "Philadelphia",
+    "name": "76ers"
+  },
+  {
+    "team_id_nba": 1610612751,
+    "team_id_sd": 8,
+    "abbreviation": "BKN",
+    "nickname": "Nets",
+    "team_name": "Brooklyn Nets",
+    "city": "Brooklyn",
+    "name": "Nets"
+  },
+  {
+    "team_id_nba": 1610612738,
+    "team_id_sd": 9,
+    "abbreviation": "BOS",
+    "nickname": "Celtics",
+    "team_name": "Boston Celtics",
+    "city": "Boston",
+    "name": "Celtics"
+  },
+  {
+    "team_id_nba": 1610612761,
+    "team_id_sd": 10,
+    "abbreviation": "TOR",
+    "nickname": "Raptors",
+    "team_name": "Toronto Raptors",
+    "city": "Toronto",
+    "name": "Raptors"
+  },
+  {
+    "team_id_nba": 1610612741,
+    "team_id_sd": 11,
+    "abbreviation": "CHI",
+    "nickname": "Bulls",
+    "team_name": "Chicago Bulls",
+    "city": "Chicago",
+    "name": "Bulls"
+  },
+  {
+    "team_id_nba": 1610612739,
+    "team_id_sd": 12,
+    "abbreviation": "CLE",
+    "nickname": "Cavaliers",
+    "team_name": "Cleveland Cavaliers",
+    "city": "Cleveland",
+    "name": "Cavaliers"
+  },
+  {
+    "team_id_nba": 1610612754,
+    "team_id_sd": 13,
+    "abbreviation": "IND",
+    "nickname": "Pacers",
+    "team_name": "Indiana Pacers",
+    "city": "Indiana",
+    "name": "Pacers"
+  },
+  {
+    "team_id_nba": 1610612765,
+    "team_id_sd": 14,
+    "abbreviation": "DET",
+    "nickname": "Pistons",
+    "team_name": "Detroit Pistons",
+    "city": "Detroit",
+    "name": "Pistons"
+  },
+  {
+    "team_id_nba": 1610612749,
+    "team_id_sd": 15,
+    "abbreviation": "MIL",
+    "nickname": "Bucks",
+    "team_name": "Milwaukee Bucks",
+    "city": "Milwaukee",
+    "name": "Bucks"
+  },
+  {
+    "team_id_nba": 1610612750,
+    "team_id_sd": 16,
+    "abbreviation": "MIN",
+    "nickname": "Timberwolves",
+    "team_name": "Minnesota Timberwolves",
+    "city": "Minnesota",
+    "name": "Timberwolves"
+  },
+  {
+    "team_id_nba": 1610612762,
+    "team_id_sd": 17,
+    "abbreviation": "UTA",
+    "nickname": "Jazz",
+    "team_name": "Utah Jazz",
+    "city": "Utah",
+    "name": "Jazz"
+  },
+  {
+    "team_id_nba": 1610612760,
+    "team_id_sd": 18,
+    "abbreviation": "OKC",
+    "nickname": "Thunder",
+    "team_name": "Oklahoma City Thunder",
+    "city": "Oklahoma City",
+    "name": "Thunder"
+  },
+  {
+    "team_id_nba": 1610612757,
+    "team_id_sd": 19,
+    "abbreviation": "POR",
+    "nickname": "Trail Blazers",
+    "team_name": "Portland Trail Blazers",
+    "city": "Portland",
+    "name": "Trail Blazers"
+  },
+  {
+    "team_id_nba": 1610612743,
+    "team_id_sd": 20,
+    "abbreviation": "DEN",
+    "nickname": "Nuggets",
+    "team_name": "Denver Nuggets",
+    "city": "Denver",
+    "name": "Nuggets"
+  },
+  {
+    "team_id_nba": 1610612763,
+    "team_id_sd": 21,
+    "abbreviation": "MEM",
+    "nickname": "Grizzlies",
+    "team_name": "Memphis Grizzlies",
+    "city": "Memphis",
+    "name": "Grizzlies"
+  },
+  {
+    "team_id_nba": 1610612745,
+    "team_id_sd": 22,
+    "abbreviation": "HOU",
+    "nickname": "Rockets",
+    "team_name": "Houston Rockets",
+    "city": "Houston",
+    "name": "Rockets"
+  },
+  {
+    "team_id_nba": 1610612740,
+    "team_id_sd": 23,
+    "abbreviation": "NOP",
+    "nickname": "Pelicans",
+    "team_name": "New Orleans Pelicans",
+    "city": "New Orleans",
+    "name": "Pelicans"
+  },
+  {
+    "team_id_nba": 1610612759,
+    "team_id_sd": 24,
+    "abbreviation": "SAS",
+    "nickname": "Spurs",
+    "team_name": "San Antonio Spurs",
+    "city": "San Antonio",
+    "name": "Spurs"
+  },
+  {
+    "team_id_nba": 1610612742,
+    "team_id_sd": 25,
+    "abbreviation": "DAL",
+    "nickname": "Mavericks",
+    "team_name": "Dallas Mavericks",
+    "city": "Dallas",
+    "name": "Mavericks"
+  },
+  {
+    "team_id_nba": 1610612744,
+    "team_id_sd": 26,
+    "abbreviation": "GSW",
+    "nickname": "Warriors",
+    "team_name": "Golden State Warriors",
+    "city": "Golden State",
+    "name": "Warriors"
+  },
+  {
+    "team_id_nba": 1610612747,
+    "team_id_sd": 27,
+    "abbreviation": "LAL",
+    "nickname": "Lakers",
+    "team_name": "Los Angeles Lakers",
+    "city": "Los Angeles",
+    "name": "Lakers"
+  },
+  {
+    "team_id_nba": 1610612746,
+    "team_id_sd": 28,
+    "abbreviation": "LAC",
+    "nickname": "Clippers",
+    "team_name": "Los Angeles Clippers",
+    "city": "Los Angeles",
+    "name": "Clippers"
+  },
+  {
+    "team_id_nba": 1610612756,
+    "team_id_sd": 29,
+    "abbreviation": "PHX",
+    "nickname": "Suns",
+    "team_name": "Phoenix Suns",
+    "city": "Phoenix",
+    "name": "Suns"
+  },
+  {
+    "team_id_nba": 1610612758,
+    "team_id_sd": 30,
+    "abbreviation": "SAC",
+    "nickname": "Kings",
+    "team_name": "Sacramento Kings",
+    "city": "Sacramento",
+    "name": "Kings"
+  }
+]
