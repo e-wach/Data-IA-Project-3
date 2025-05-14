@@ -54,13 +54,6 @@ def callback_games(message):
             logging.warning("Missing fields.")
             message.nack()
             return
-        payload["game_date"] = transform_game_date(payload["game_date"])
-        home, away, m_type = transform_matchup(payload["matchup"])
-        payload["home_team"] = home
-        payload["away_team"] = away
-        payload["matchup_type"] = m_type
-        game_status = get_game_status(payload["game_date"])
-        payload["is_completed"] = game_status
         insert_into_bigquery(bq, payload, PROJECT_ID, DATASET_ID, NBA_GAMES_TABLE)
         message.ack()
         logging.info("NBA GAMES processed sucessfully.")
@@ -104,5 +97,3 @@ def callback_odds(message):
 if __name__ == "__main__":
     listen_for_messages(callback_teams, subscription_name=NBA_TEAMS_SUB, project_id=PROJECT_ID)
     listen_for_messages(callback_games, subscription_name=NBA_GAMES_SUB, project_id=PROJECT_ID)
-    listen_for_messages(callback_upcoming_games, subscription_name=NBA_GAMES_WEEK_SUB, project_id=PROJECT_ID)
-    # listen_for_messages(callback_upcoming_games, subscription_name=NBA_ODDS_SUB, project_id=PROJECT_ID)
