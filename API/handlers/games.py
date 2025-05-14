@@ -27,10 +27,10 @@ def process_publish(topic, date_str):
     if response.status_code == 200:
         data = response.json()
         if not data:
-            logging.info("No dara found for the given date.")
+            logging.info("No data found for the given date.")
             return
         for game in data:
-            game_data = { ################ CAMBIAR LAS KEY PARA QUE COINCIDA CON EL HISTÓRICO
+            game_data = {
                 "team_id_sd": game.get("TeamID", 0),
                 # "StatID": game.get("StatID", 0),
                 # "SeasonType": game.get("SeasonType", 0),
