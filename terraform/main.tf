@@ -16,7 +16,6 @@ module "bigquery" {
   project_id = var.project_id
   dataset_id = var.dataset_id
   region = var.region
-  table_names = var.table_names
 }
 
 module "cloudsql" {
