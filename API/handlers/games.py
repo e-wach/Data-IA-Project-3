@@ -2,7 +2,6 @@ import requests
 import datetime
 import logging
 import json
-import os
 from datetime import timedelta, datetime
 
 from .publisher import publish_message
@@ -10,15 +9,12 @@ from .publisher import publish_message
 logging.basicConfig(level=logging.DEBUG)
 
 
-API_KEY_SD = os.getenv("API_KEY_SD", "default_key")
-
-
 def daterange(start_date, end_date):
     for n in range((end_date - start_date).days + 1):
         yield start_date + timedelta(n)
 
 
-def process_publish(topic, date_str):
+def process_publish(topic, date_str, PROJECT_ID, API_KEY_SD):
     url = f"https://api.sportsdata.io/v3/nba/scores/json/TeamGameStatsByDate/{date_str}"
     url_add = f"https://api.sportsdata.io/v3/nba/scores/json/GamesByDate/{date_str}"
     headers = {
@@ -101,7 +97,7 @@ def process_publish(topic, date_str):
         if game_data:
             try:
                 message = json.dumps(game_data)
-                publish_message(topic, message)
+                publish_message(topic, message, PROJECT_ID)
                 logging.info(f"Published message to topic {topic}: {message}")
             except Exception as e:
                 logging.error(f"Error publishing message for game {game.get('GameID')}: {e}")
@@ -112,19 +108,19 @@ def process_publish(topic, date_str):
 
 
 # API call for games from 12/05/2025 to today (yesterday's last game)
-def latest_games(topic, start_date_str):
+def latest_games(topic, start_date_str, PROJECT_ID, API_KEY_SD):
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
     end_date = datetime.utcnow()
     for single_date in daterange(start_date, end_date):
         date_str = single_date.strftime("%Y-%m-%d")
         logging.info(f"Llamando API para: {date_str}")
-        process_publish(topic, date_str)
+        process_publish(topic, date_str, PROJECT_ID, API_KEY_SD)
 
 # API call to update BigQuery games table with most recent games
-def yesterday_games(topic):
+def yesterday_games(topic, PROJECT_ID, API_KEY_SD):
     yesterday = datetime.utcnow() - timedelta(1)
     yesterday_str = yesterday.strftime("%Y-%m-%d")
     logging.info(f"Llamando API para: {yesterday_str}")
-    process_publish(topic, yesterday_str)
+    process_publish(topic, yesterday_str, PROJECT_ID, API_KEY_SD)
 
 

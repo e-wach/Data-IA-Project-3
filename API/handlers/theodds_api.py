@@ -1,5 +1,4 @@
 import requests
-import os
 import json
 import logging
 
@@ -8,10 +7,9 @@ from .publisher import publish_message
 
 logging.basicConfig(level=logging.INFO)
 
-API_KEY_ODDS = os.getenv('API_KEY_ODDS', 'default-key')
 
 # Call to The Odds API
-def fetch_odds_data(): 
+def fetch_odds_data(API_KEY_ODDS): 
     SPORT = 'basketball_nba'
     REGIONS = 'eu' # 'eu,us,uk'
     MARKETS = 'h2h' # 'h2h,spreads,totals'
@@ -75,9 +73,9 @@ def create_bookmaker_message(bookmaker):
     }
 
 
-def get_odds_week(topic):
+def get_odds_week(topic, PROJECT_ID, API_KEY_ODDS):
     try: 
-        odds_json = fetch_odds_data()
+        odds_json = fetch_odds_data(API_KEY_ODDS)
         if not odds_json:
             return {"status": "error", "message": "No odds data available"}, 500
         for game in odds_json:
@@ -97,7 +95,7 @@ def get_odds_week(topic):
                 else:
                     logging.warning(f"Bookmaker {bookmaker_message['bookmaker_name']} has no valid markets.")
             message_json = json.dumps(message)
-            publish_message(topic, message_json)
+            publish_message(topic, message_json, PROJECT_ID)
             logging.info(f"Published odds for game {game_id} - {home_team} vs {away_team}")
         return {"status": "ok"}, 200
     except Exception as e:
