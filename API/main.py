@@ -31,7 +31,8 @@ def historical_data(type):
             get_odds_week(topic_odds)
             logging.info("NBA betting odds sent to PubSub")
         elif type == "all":
-            latest_games(topic_games)
+            start_date_str = "2025-05-12"
+            latest_games(topic_games, start_date_str)
             logging.info("NBA lastest games sent to PubSub")
             time.sleep(10)
             get_upcoming_games(topic_games_week)
