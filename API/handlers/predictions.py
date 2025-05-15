@@ -1,41 +1,35 @@
 from google.cloud import bigquery
-import mysql.connector
+import psycopg2
 
 client = bigquery.Client()
 
-SQL_HOST =""
-SQL_USER = ""
-SQL_PASS = ""
-SQL_DB = ""
-SQL_DIR = ""
-INSTANCE_ID = ""
+SQL_PORT = "5432"  
 
-def connect_to_db(PROJECT_ID, REGION):
-    connection = mysql.connector.connect(
+def connect_to_db(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB):
+    connection = psycopg2.connect(
+        host=SQL_HOST,
         user=SQL_USER,
         password=SQL_PASS,
-        database=SQL_DB,
-        unix_socket=f"{SQL_DIR}/{PROJECT_ID}:{REGION}:{INSTANCE_ID}"
+        dbname=SQL_DB,
+        port=SQL_PORT
     )
     return connection
 
-
-def query_bigquery(PROJECT_ID, REGION):
+def query_bigquery(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB):
     query = """
     <QUERY AGENT AI>
     """
     query_job = client.query(query)
     results = query_job.result()
-    db_connection = connect_to_db(PROJECT_ID, REGION)
-    cursor = db_connection.cursor()
+    db_connection = connect_to_db()
+    cursor = db_connection.cursor(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB)
     for row in results:
         K = row["v"]
         insert_query = """
-       INSERT INTO ... 
+        INSERT INTO ... 
         """
         cursor.execute(insert_query, (K,))
     db_connection.commit()
     cursor.close()
     db_connection.close()
-    return "Datos insertados correctamente a SQL"
-
+    return "Agent predictions inserted successfully into PostgreSQL"
