@@ -6,7 +6,7 @@ import time
 from handlers.theodds_api import get_odds_week
 from handlers.upcoming_games import get_upcoming_games
 from handlers.games import latest_games, yesterday_games
-from handlers.injuries import get_injuries
+from API.handlers.injured_players import get_injuries
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
