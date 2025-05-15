@@ -54,6 +54,7 @@
   { "name": "double_doubles",                    "type": "FLOAT",    "mode": "NULLABLE" },
   { "name": "triple_doubles",                    "type": "FLOAT",    "mode": "NULLABLE" },
   { "name": "fantasy_points_fantasydraft",       "type": "FLOAT",    "mode": "NULLABLE" },
-  { "name": "plus_minus",                        "type": "FLOAT",    "mode": "NULLABLE" }
+  { "name": "plus_minus",                        "type": "FLOAT",    "mode": "NULLABLE" },
+  { "name": "rest_days",                         "type": "INTEGER",  "mode": "NULLABLE" }
 ]
   
