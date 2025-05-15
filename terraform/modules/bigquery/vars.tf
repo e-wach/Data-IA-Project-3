@@ -9,12 +9,3 @@ variable "dataset_id" {
 variable "region" {
   type = string
 }
-
-variable "table_names" {
-  type = object({
-    games        = string
-    # games_week   = string
-    # odds         = string
-    teams        = string
-  })
-}
