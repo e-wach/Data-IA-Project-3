@@ -11,6 +11,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # Env. variables defined in Terraform
+PROJECT_ID = os.getenv("GCP_PROJECT_ID", "data-ia-project-3")
 topic_teams = os.getenv("TOPIC_nba_teams", "nba_teams")
 topic_games = os.getenv("TOPIC_nba_games", "nba_games")
 topic_games_week = os.getenv("TOPIC_nba_games_week", "nba_games_week")
@@ -79,3 +80,5 @@ def daily_data(type):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080)
+
+
