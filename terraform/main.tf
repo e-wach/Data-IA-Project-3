@@ -1,5 +1,8 @@
 terraform {
-  backend "gcs" {}
+  backend "gcs" {
+    bucket = "terraformstatedp3"
+    prefix = "terraform/terraform.tfstate"
+  }
 }
 
 module "api" {
