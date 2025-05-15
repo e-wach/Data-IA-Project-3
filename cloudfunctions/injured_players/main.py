@@ -36,7 +36,7 @@ def create_table_if_not_exists(conn):
     team_abbr VARCHAR(10),
     status VARCHAR(10),
     first_name VARCHAR(50),
-    first_last VARCHAR(50),
+    last_name VARCHAR(50),
     injury_start_date DATE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
@@ -94,10 +94,10 @@ def transform_team_id(payload):
         team_info = teams_dict.get(team_sd_id)
 
         if team_info:
-            payload["team_id"] = team_info.get("team_id_nba", "Unknown")
+            payload["team_id"] = team_info.get("team_id_nba", None)
             payload["team_abbr"] = team_info.get("abbreviation", "Unknown")
         else:
-            payload["team_id"] = "Unknown"
+            payload["team_id"] = None
             payload["team_abbr"] = "Unknown"
 
         return payload
@@ -108,7 +108,7 @@ def transform_team_id(payload):
 
 
 @functions_framework.cloud_event
-def callback_upcoming_games(cloud_event):
+def callback_injured(cloud_event):
     try:
         payload = json.loads(base64.b64decode(cloud_event.data["message"]["data"]).decode('utf-8'))
         payload["injury_start_date"] = transform_date(payload["injury_start_date"])
