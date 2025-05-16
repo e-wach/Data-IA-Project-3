@@ -9,7 +9,7 @@ from google.cloud import bigquery
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
+PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "feisty-lamp-442712-m8")
 DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
 NBA_TEAMS_TABLE = os.getenv("NBA_TEAMS_TABLE", "nba_teams")
 

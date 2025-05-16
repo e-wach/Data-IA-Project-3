@@ -1,3 +1,3 @@
 google-cloud-pubsub
 google-cloud-bigquery
-functions-framework
+functions-framework==3.*
