@@ -2,19 +2,19 @@ from nba_api.stats.endpoints import leaguegamefinder
 from datetime import datetime
 import pandas as pd
 import logging
-
+ 
 logging.basicConfig(level=logging.WARNING)
-
+ 
 SEASONS = ['2022-23', '2023-24', '2024-25']
 CUTOFF_DATE = "2025-05-11"
-
+ 
 def transform_game_date(s):
     try:
         return datetime.strptime(s, "%Y-%m-%d").strftime("%Y-%m-%d")
     except (ValueError, TypeError):
         logging.warning(f"Invalid game date format: {s}")
         return None
-
+ 
 def transform_matchup(m):
     if " vs." in m:
         h, a = m.split(" vs.")
@@ -24,48 +24,43 @@ def transform_matchup(m):
         return h.strip(), a.strip(), "away"
     else:
         return m, m, None
-
+ 
 def calculate_rest_days(df, date_col='game_date'):
     d = df.copy()
     d[date_col] = pd.to_datetime(d[date_col], format="%Y-%m-%d", errors="coerce")
     d = d.sort_values(['team_id', date_col]).reset_index(drop=True)
     d['rest_days'] = d.groupby('team_id')[date_col].diff().dt.days.fillna(0).astype(int)
     return d
-
-# 1) Load & transform each season
+ 
+# 1) Retrieve and transform data for each season
 frames = []
 for season in SEASONS:
     finder = leaguegamefinder.LeagueGameFinder(league_id_nullable="00", season_nullable=season)
     df = finder.get_data_frames()[0]
-
-    # raw to lowercase date
     df['game_date'] = df['GAME_DATE'].apply(transform_game_date)
-    # matchup to home/away
-    df[['home_team','away_team','home_away']] = df['MATCHUP'].apply(
-        lambda x: pd.Series(transform_matchup(x))
-    )
+    df[['home_team','away_team','home_away']] = df['MATCHUP'].apply(lambda x: pd.Series(transform_matchup(x)))
     df['season'] = season
     frames.append(df)
-
-# 2) Concat & filter by cutoff
+ 
+# 2) Concatenate and filter by cutoff date
 df = pd.concat(frames, ignore_index=True)
 df = df[df['game_date'] <= CUTOFF_DATE]
-
+ 
 # 3) Extract year/month/day
 df['game_date'] = pd.to_datetime(df['game_date'], format="%Y-%m-%d", errors="coerce")
 df['year']  = df['game_date'].dt.year
 df['month'] = df['game_date'].dt.month
 df['day']   = df['game_date'].dt.day
-
-# 4) Lowercase all column names, drop duplicates from original uppercase
+ 
+# 4) Lowercase and dedupe column names
 df.columns = df.columns.str.lower()
 df = df.loc[:, ~df.columns.duplicated()]
-
-# 5) Calculate rest days now that 'team_id' exists lowercase
+ 
+# 5) Calculate rest_days
 df = calculate_rest_days(df, date_col='game_date')
-
+ 
 # 6) Rename to match schema_games.json
-rename_map = {
+df = df.rename(columns={
     'team_abbreviation': 'team_abbr',
     'wl':               'win_loss',
     'pts':              'points',
@@ -105,10 +100,9 @@ rename_map = {
     'tpl_dbl':          'triple_doubles',
     'pts_fdraft':       'fantasy_points_fantasydraft',
     'plus_minus':       'plus_minus'
-}
-df = df.rename(columns=rename_map)
-
-# 7) Final select & order
+})
+ 
+# 7) Ensure every schema field exists (fill missing with NA)
 schema_fields = [
     'season','team_id','team_abbr','team_name','possessions','game_id',
     'game_date','year','month','day','date_time','home_away','home_team',
@@ -128,28 +122,12 @@ schema_fields = [
     'fantasy_points_yahoo','double_doubles','triple_doubles',
     'fantasy_points_fantasydraft','plus_minus','rest_days'
 ]
-# keep only schema columns, in order
-df = df[[c for c in schema_fields if c in df.columns]]
-
-# 7.1) Convert selected columns to float
-float_columns = [
-    'field_goals_made','field_goals_attempted','field_goals_percentage',
-    'effective_field_goals_percentage','two_pointers_made','two_pointers_attempted',
-    'two_pointers_percentage','three_pointers_made','three_pointers_attempted',
-    'three_pointers_percentage','free_throws_made','free_throws_attempted',
-    'free_throws_percentage','offensive_rebounds','defensive_rebounds','rebounds',
-    'offensive_rebounds_percentage','defensive_rebounds_percentage',
-    'total_rebounds_percentage','assists','assists_percentage','steals',
-    'steals_percentage','blocked_shots','blocks_percentage','turnovers',
-    'turnovers_percentage','personal_fouls','points','true_shooting_attempts',
-    'true_shooting_percentage','player_efficiency_rating','usage_rate_percentage',
-    'fantasy_points','fantasy_points_fanduel','fantasy_points_draftkings',
-    'fantasy_points_yahoo','double_doubles','triple_doubles',
-    'fantasy_points_fantasydraft','plus_minus'
-]
-cols_to_convert = [col for col in float_columns if col in df.columns]
-df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors='coerce')
-
-# 8) Write out
-df.to_csv("games_22-25.csv", index=False)
-
+for col in schema_fields:
+    if col not in df.columns:
+        df[col] = pd.NA
+ 
+# 8) Drop everything else and reorder
+df = df[schema_fields]
+ 
+# 9) Export final CSV
+df.to_csv("years_22-25.csv", index=False)
