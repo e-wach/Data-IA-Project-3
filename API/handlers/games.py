@@ -16,7 +16,7 @@ def daterange(start_date, end_date):
 
 def process_publish(topic, date_str, PROJECT_ID, API_KEY_SD):
     url = f"https://api.sportsdata.io/v3/nba/scores/json/TeamGameStatsByDate/{date_str}"
-    url_add = f"https://api.sportsdata.io/v3/nba/scores/json/GamesByDate/{date_str}"
+    url_add = f"https://api.sportsdata.io/v3/nba/scores/json/ScoresBasic/{date_str}"
     headers = {
             "Ocp-Apim-Subscription-Key": API_KEY_SD
             }
@@ -103,8 +103,6 @@ def process_publish(topic, date_str, PROJECT_ID, API_KEY_SD):
                 logging.error(f"Error publishing message for game {game.get('GameID')}: {e}")
         else:
             logging.warning(f"Invalid data for game {game.get('GameID')}, skipping.")
-    else:
-        logging.error(f"Error calling API {url}: {response.status_code}")
 
 
 # API call for games from 12/05/2025 to today (yesterday's last game)
