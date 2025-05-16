@@ -96,6 +96,7 @@ def transform_team_id_to_abbr(payload):
         payload["team_abbr"] = team_info["abbreviation"]
         payload["team_id"] = team_info["team_id_nba"]
         payload["team_name"] = team_info["team_name"]
+        payload["home_team"] = team_info["abbreviation"]
         del payload["team_id_sd"]
         visitor_team_info = nba_teams_dict.get(payload["away_team_id_sd"], {"abbreviation": "Unknown", "team_name": "Unknown", "team_id_nba": "Unknown", "team_id_sd": "Unknown", "city": "Unknown", "nickname": "Unknown"})
         payload["away_team"] = visitor_team_info["abbreviation"]
