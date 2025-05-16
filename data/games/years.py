@@ -131,5 +131,25 @@ schema_fields = [
 # keep only schema columns, in order
 df = df[[c for c in schema_fields if c in df.columns]]
 
+# 7.1) Convert selected columns to float
+float_columns = [
+    'field_goals_made','field_goals_attempted','field_goals_percentage',
+    'effective_field_goals_percentage','two_pointers_made','two_pointers_attempted',
+    'two_pointers_percentage','three_pointers_made','three_pointers_attempted',
+    'three_pointers_percentage','free_throws_made','free_throws_attempted',
+    'free_throws_percentage','offensive_rebounds','defensive_rebounds','rebounds',
+    'offensive_rebounds_percentage','defensive_rebounds_percentage',
+    'total_rebounds_percentage','assists','assists_percentage','steals',
+    'steals_percentage','blocked_shots','blocks_percentage','turnovers',
+    'turnovers_percentage','personal_fouls','points','true_shooting_attempts',
+    'true_shooting_percentage','player_efficiency_rating','usage_rate_percentage',
+    'fantasy_points','fantasy_points_fanduel','fantasy_points_draftkings',
+    'fantasy_points_yahoo','double_doubles','triple_doubles',
+    'fantasy_points_fantasydraft','plus_minus'
+]
+cols_to_convert = [col for col in float_columns if col in df.columns]
+df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors='coerce')
+
 # 8) Write out
-df.to_csv("years_22-25_unified.csv", index=False)
+df.to_csv("games_22-25.csv", index=False)
+
