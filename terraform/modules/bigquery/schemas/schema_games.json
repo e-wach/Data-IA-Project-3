@@ -4,7 +4,7 @@
   { "name": "team_abbr",                         "type": "STRING",   "mode": "NULLABLE" },
   { "name": "team_name",                         "type": "STRING",   "mode": "NULLABLE" },
   { "name": "possessions",                       "type": "FLOAT",    "mode": "NULLABLE" },
-  { "name": "game_id",                           "type": "INTEGER",   "mode": "REQUIRED" },
+  { "name": "game_id",                           "type": "STRING",   "mode": "REQUIRED" },
   { "name": "game_date",                         "type": "DATE",     "mode": "NULLABLE" },
   { "name": "year",                              "type": "INTEGER",  "mode": "NULLABLE" },
   { "name": "month",                             "type": "INTEGER",  "mode": "NULLABLE" },
