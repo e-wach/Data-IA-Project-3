@@ -32,13 +32,13 @@ def callback_games(cloud_event):
         source_format=bigquery.SourceFormat.CSV,
         skip_leading_rows=1,
         autodetect=False, 
-        schema=[ ######### REVISAR
+        schema=[
   { "name": "season",                            "type": "STRING",   "mode": "REQUIRED" },
   { "name": "team_id",                           "type": "INTEGER",  "mode": "NULLABLE" },
   { "name": "team_abbr",                         "type": "STRING",   "mode": "NULLABLE" },
   { "name": "team_name",                         "type": "STRING",   "mode": "NULLABLE" },
   { "name": "possessions",                       "type": "FLOAT",    "mode": "NULLABLE" },
-  { "name": "game_id",                           "type": "INTEGER",   "mode": "REQUIRED" },
+  { "name": "game_id",                           "type": "INTEGER",   "mode": "REQUIRED"},
   { "name": "game_date",                         "type": "DATE",     "mode": "NULLABLE" },
   { "name": "year",                              "type": "INTEGER",  "mode": "NULLABLE" },
   { "name": "month",                             "type": "INTEGER",  "mode": "NULLABLE" },
