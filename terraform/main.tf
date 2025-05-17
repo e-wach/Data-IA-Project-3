@@ -25,13 +25,7 @@ source          = "./modules/bigquery"
   region          = var.region
   dataset_id      = var.dataset_id
   bucket_name     = var.bucket_name
-
   topic_names = var.topic_names
-
-  table_names = {
-    games = "nba_games"
-    teams = "nba_teams"
-  }
 }
 
 module "cloudsql" {

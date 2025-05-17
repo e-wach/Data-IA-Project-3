@@ -18,12 +18,6 @@ variable "topic_names" {
   type = list(string)
 }
 
-variable "table_names" {
-  type = object({
-    games = string
-    teams = string
-  })
-}
 
 variable "project_number" {
   type = string 

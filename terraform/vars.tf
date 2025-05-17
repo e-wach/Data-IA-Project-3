@@ -28,12 +28,6 @@ variable "dataset_id" {
   type    = string
 }
 
-variable "table_names" {
-  type = object({
-    games = string
-    teams = string
-  })
-}
 
 variable "project_number" {
   type = string
