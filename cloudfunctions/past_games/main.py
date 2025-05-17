@@ -3,7 +3,7 @@ import logging
 from google.cloud import bigquery
 import functions_framework
 
-PROJECT_ID = os.getenv("GCP_PROJECT", "original-list-459014-b6")
+PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "default_project")
 DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
 NBA_GAMES_TABLE = os.getenv("BQ_TABLE", "nba_games")
 
