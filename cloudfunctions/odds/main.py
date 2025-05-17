@@ -60,8 +60,8 @@ def insert_postgres(payload):
         with get_postgres_connection() as conn:
             with conn.cursor() as cursor:
                 delete_query = """
-                DELETE FROM nba_games_week 
-                WHERE created_at < NOW() - INTERVAL '1 day';
+                DELETE FROM games_odds 
+                WHERE created_at::date < CURRENT_DATE;
                 """
                 cursor.execute(delete_query)
                 insert_query = """

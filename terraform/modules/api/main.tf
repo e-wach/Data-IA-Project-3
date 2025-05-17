@@ -98,3 +98,20 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
   depends_on = [google_cloud_run_v2_service.cloudrun-api]
 }
 
+resource "google_cloud_scheduler_job" "api-job" {
+  name             = "dailyapi"
+  description      = "Daily invoke API"
+  schedule         = "0 13 * * * "
+  time_zone        = "Europe/Madrid"
+  attempt_deadline = "180s"
+
+  retry_config {
+    retry_count = 2
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "${google_cloud_run_v2_service.cloudrun-api.uri}/daily/all"
+    }
+  }
+}

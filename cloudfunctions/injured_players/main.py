@@ -56,7 +56,7 @@ def insert_postgres(payload):
         cursor = conn.cursor()
         delete_query = """
         DELETE FROM injured_players 
-        WHERE created_at < NOW() - INTERVAL '1 day';
+        WHERE created_at::date < CURRENT_DATE;
         """
         cursor.execute(delete_query)
         insert_query = """
