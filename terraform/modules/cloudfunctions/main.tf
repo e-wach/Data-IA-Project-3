@@ -1,5 +1,5 @@
 # Cloud Function from PubSub to BigQuery (nba_games) for most recent games (API SPORTS DATA)
-resource "google_storage_bucket_object" "function_zip" {
+resource "google_storage_bucket_object" "zip_games" {
   name   = "games.zip"
   bucket = var.bucket_name
   source = "${path.module}/zip/games.zip"
@@ -17,7 +17,7 @@ resource "google_cloudfunctions2_function" "callback_games" {
     source {
       storage_source {
         bucket = var.bucket_name
-        object = google_storage_bucket_object.function_zip.name
+        object = google_storage_bucket_object.zip_games.name
       }
     }
   }
@@ -53,7 +53,7 @@ resource "google_cloudfunctions2_function_iam_member" "unauthenticated_invoker" 
 
 
 # Cloud Functions from PubSub to CloudSQL (nba_games_week)
-resource "google_storage_bucket_object" "function_zip_upcoming" {
+resource "google_storage_bucket_object" "zip_upcoming_games" {
   name   = "games.zip"
   bucket = var.bucket_name
   source = "${path.module}/zip/upcoming_games.zip"
@@ -69,7 +69,7 @@ resource "google_cloudfunctions2_function" "upcoming_games" {
     source {
       storage_source {
         bucket = var.bucket_name
-        object = google_storage_bucket_object.function_zip_upcoming.name
+        object = google_storage_bucket_object.zip_upcoming_games.name
       }
     }
   }
