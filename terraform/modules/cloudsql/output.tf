@@ -1,6 +1,6 @@
 output "sql_host" {
     description = "SQL Public IP"
-    value = google_sql_database_instance.postgres_instance.ip_address
+    value = google_sql_database_instance.postgres_instance.ip_address[0].ip_address
 }
 
 output "sql_user" {

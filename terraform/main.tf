@@ -14,8 +14,8 @@ module "api" {
   api_key_sd = var.api_key_sd
   sql_host = module.cloudsql.sql_host
   sql_db = module.cloudsql.sql_db
-  sql_pass = module.cloudsql.pass
-  sql_user = module.cloudsql.user
+  sql_pass = module.cloudsql.sql_pass
+  sql_user = module.cloudsql.sql_user
 }
 
 module "bigquery" {
@@ -28,4 +28,14 @@ module "bigquery" {
 module "cloudsql" {
   source = "./modules/cloudsql"
   region = var.region
+}
+
+module "api-agent" {
+  source = "./modules/api-agent"
+  region = var.region
+  project_id = var.project_id
+  sql_host = module.cloudsql.sql_host
+  sql_db = module.cloudsql.sql_db
+  sql_pass = module.cloudsql.sql_pass
+  sql_user = module.cloudsql.sql_user
 }

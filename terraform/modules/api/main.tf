@@ -37,7 +37,7 @@ resource "null_resource" "docker_build_push_api" {
 
 ## Cloud Run Service
 resource "google_cloud_run_v2_service" "cloudrun-api" {
-    name = "nba-api"
+    name = "nbaapi"
     location = var.region
     deletion_protection = false
     ingress = "INGRESS_TRAFFIC_ALL"
@@ -97,3 +97,4 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
 
   depends_on = [google_cloud_run_v2_service.cloudrun-api]
 }
+

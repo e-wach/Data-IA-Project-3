@@ -1,5 +1,5 @@
-Flask>=2.0
-google-cloud-pubsub>=2.0.0
-nba_api>=1.1.10
-requests>=2.20.0
-psycopg2-binary>=2.9.3
+Flask
+google-cloud-pubsub
+google-cloud-bigquery
+requests
+psycopg2-binary
