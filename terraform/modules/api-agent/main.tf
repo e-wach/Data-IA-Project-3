@@ -5,11 +5,11 @@ resource "google_artifact_registry_repository" "sql_api_repo" {
 }
 
 locals {
-    image_path = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.api_repo.repository_id}/sql_api:latest"
+    image_path = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.sql_api_repo.repository_id}/sql_api:latest"
   }
 
 
-resource "null_resource" "docker_build_push_api" {
+resource "null_resource" "docker_build_push_api_agent" {
   provisioner "local-exec" {
     command = <<EOT
       docker build -t ${local.image_path} -f ../API-AI/Dockerfile ../API-AI && docker push ${local.image_path}
@@ -18,7 +18,7 @@ resource "null_resource" "docker_build_push_api" {
   triggers = {
     always_run = timestamp()
   }
-  depends_on = [google_artifact_registry_repository.api_repo]
+  depends_on = [google_artifact_registry_repository.sql_api_repo]
 }
 
 ## Cloud Run Service
@@ -34,12 +34,28 @@ resource "google_cloud_run_v2_service" "cloudrun-sql-api" {
                 name = "PROJECT_ID"
                 value = var.project_id
             }
+            env {
+                name = "SQL_HOST"
+                value = var.sql_host
+            }
+            env {
+                name = "SQL_USER"
+                value = var.sql_user
+            }
+            env {
+                name = "SQL_PASS"
+                value = var.sql_pass
+            }
+            env {
+                name = "SQL_DB"
+                value = var.sql_db
+            }
             ports {
                 container_port = 8000
             }
         }
         }
-    depends_on = [google_artifact_registry_repository.sql_api_repo, null_resource.docker_build_push_api]
+    depends_on = [google_artifact_registry_repository.sql_api_repo, null_resource.docker_build_push_api_agent]
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public_invoker" {

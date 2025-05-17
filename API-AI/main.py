@@ -34,18 +34,21 @@ def get_sql_data():
         upcoming_data = cursor.fetchall()
         cursor.execute("SELECT * FROM game_odds")
         odds_data = cursor.fetchall()
+        cursor.execute("SELECT * FROM predictions")
+        predictions_data = cursor.fetchall()
         cursor.close()
         conn.close()
         return jsonify({
             "injured_players": injured_data,
             "nba_games_week": upcoming_data,
-            "game_odds": odds_data
+            "game_odds": odds_data,
+            "predictions" : predictions_data
         })
     except Exception as e:
         logging.error(f"Error fetching SQL data: {str(e)}")
         return {"status": "error", "message": str(e)}, 500
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8081)
+    app.run(debug=True, host="0.0.0.0", port=8000)
 
 
