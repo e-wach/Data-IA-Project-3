@@ -9,7 +9,7 @@ import psycopg2
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "original-list-459014-b6")
+PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "default_project")
 SQL_DB = os.getenv("DB_NAME", "nba_database")
 SQL_USER = os.getenv("USER", "nba_user")
 SQL_PASS =  os.getenv("SQL_PASS", "dataproject3")
