@@ -114,4 +114,3 @@ resource "google_cloud_scheduler_job" "api-job" {
     uri         = "${google_cloud_run_v2_service.cloudrun-api.uri}/daily/all"
     }
   }
-}
