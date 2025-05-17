@@ -55,7 +55,7 @@ resource "google_cloudfunctions2_function" "callback_games" {
   description = "Consume mensajes de Pub/Sub y los inserta en BigQuery"
 
   build_config {
-    runtime     = "python311"
+    runtime     = "python312"
     entry_point = "callback_games"
     source {
       storage_source {
@@ -76,7 +76,7 @@ resource "google_cloudfunctions2_function" "callback_games" {
     environment_variables = {
       GCP_PROJECT_ID = var.project_id
       BQ_DATASET     = var.dataset_id
-      GAMES_TABLE    = var.table_names.games
+      GAMES_TABLE    = google_bigquery_table.nba_games.table_id
     }
   }
 
@@ -107,7 +107,7 @@ resource "google_cloudfunctions2_function" "callback_past_games" {
   description = "Carga los partidos históricos desde CSV en BigQuery cuando se sube al bucket"
 
   build_config {
-    runtime     = "python311"
+    runtime     = "python312"
     entry_point = "callback_games"
     source {
       storage_source {
@@ -128,7 +128,7 @@ resource "google_cloudfunctions2_function" "callback_past_games" {
     environment_variables = {
       GCP_PROJECT_ID = var.project_id
       BQ_DATASET     = var.dataset_id
-      BQ_TABLE       = "nba_games"
+      BQ_TABLE       = google_bigquery_table.nba_games.table_id
     }
   }
 
@@ -148,7 +148,7 @@ resource "google_cloudfunctions2_function" "callback_past_games" {
 resource "google_storage_bucket_object" "past_games_csv" {
   name   = "past_games.csv"
   bucket = var.bucket_name
-  source = "${path.module}/../../../data/games/years_22-25.csv"
+  source = "${path.module}/../../../data/games/games22-25.csv"
 
   depends_on = [
     google_bigquery_table.nba_games,
