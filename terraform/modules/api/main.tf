@@ -57,6 +57,22 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
                 name = "API_KEY_SD"
                 value = var.api_key_sd
             }
+            env {
+                name = "SQL_HOST"
+                value = var.sql_host
+            }
+            env {
+                name = "SQL_USER"
+                value = var.sql_user
+            }
+            env {
+                name = "SQL_PASS"
+                value = var.sql_pass
+            }
+            env {
+                name = "SQL_DB"
+                value = var.sql_db
+            }
             dynamic "env" {
                 for_each = var.topic_names
                 content {

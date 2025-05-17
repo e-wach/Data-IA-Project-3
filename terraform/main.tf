@@ -12,6 +12,10 @@ module "api" {
   project_id = var.project_id
   api_key_odds = var.api_key_odds
   api_key_sd = var.api_key_sd
+  sql_host = module.cloudsql.sql_host
+  sql_db = module.cloudsql.sql_db
+  sql_pass = module.cloudsql.pass
+  sql_user = module.cloudsql.user
 }
 
 module "bigquery" {
