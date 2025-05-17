@@ -17,8 +17,3 @@ variable "bucket_name" {
 variable "topic_names" {
   type = list(string)
 }
-
-
-variable "project_number" {
-  type = string 
-}

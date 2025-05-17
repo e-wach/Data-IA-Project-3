@@ -35,6 +35,7 @@ resource "null_resource" "docker_build_push_api" {
   depends_on = [google_artifact_registry_repository.api_repo]
 }
 
+
 ## Cloud Run Service
 resource "google_cloud_run_v2_service" "cloudrun-api" {
     name = "nbaapi"
@@ -43,6 +44,7 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
     ingress = "INGRESS_TRAFFIC_ALL"
      
     template {
+        service_account = google_service_account.cloudbuild_service_account.account_id
         containers {
             image = local.image_path
             env {
@@ -85,7 +87,13 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
             }
         }
     }
-    depends_on = [google_artifact_registry_repository.api_repo, null_resource.docker_build_push_api]
+    depends_on = [google_artifact_registry_repository.api_repo, 
+    null_resource.docker_build_push_api, 
+    google_service_account.cloudbuild_service_account,
+    google_project_iam_member.act_as, 
+    google_project_iam_member.bigquery_reader, 
+    google_project_iam_member.cloudsql_client, 
+    google_project_iam_member.pubsub_publisher]
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
@@ -98,6 +106,42 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
   depends_on = [google_cloud_run_v2_service.cloudrun-api]
 }
 
+# Service account for Cloud Run
+resource "google_service_account" "cloudbuild_service_account" {
+  account_id = "build-sa"
+}
+
+resource "google_project_iam_member" "act_as" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
+resource "google_project_iam_member" "pubsub_publisher" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
+resource "google_project_iam_member" "bigquery_reader" {
+  project = var.project_id
+  role    = "roles/bigquery.dataViewer"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
+resource "google_project_iam_member" "cloudsql_client" {
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+resource "google_project_iam_member" "logs_writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
+
+# Google Scheduler API (daily invoker)
 resource "google_cloud_scheduler_job" "api-job" {
   name             = "dailyapi"
   description      = "Daily invoke API"
