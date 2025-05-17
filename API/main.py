@@ -13,8 +13,8 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 # Env. variables defined in Terraform
-PROJECT_ID = os.getenv("GCP_PROJECT_ID", "data-ia-project-3")
-topic_games = os.getenv("TOPIC_nba_games", "nba_games")
+PROJECT_ID = os.getenv("PROJECT_ID", "default-project")
+topic_games = os.getenv("TOPIC_nba_games", "default-topic")
 topic_games_week = os.getenv("TOPIC_nba_games_week", "nba_games_week")
 topic_odds = os.getenv("TOPIC_odds_week", "odds_week")
 topic_injured = os.getenv("TOPIC_injured_players", "injured_players")

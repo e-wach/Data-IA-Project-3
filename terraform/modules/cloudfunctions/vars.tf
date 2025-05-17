@@ -14,6 +14,10 @@ variable "bucket_name" {
   type = string
 }
 
+variable "topic_names" {
+  type = list(string)
+}
+
 variable "bq_table" {
   type = string
 }

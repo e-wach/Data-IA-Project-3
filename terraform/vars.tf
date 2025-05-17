@@ -27,3 +27,7 @@ variable "api_key_sd" {
 variable "dataset_id" {
   type    = string
 }
+
+variable "bq_table" {
+  type = string
+}

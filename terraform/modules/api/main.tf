@@ -29,10 +29,10 @@ resource "null_resource" "docker_build_push_api" {
       docker build -t ${local.image_path} -f ../API/Dockerfile ../API && docker push ${local.image_path}
     EOT
   }
-  triggers = {
-    always_run = timestamp()
-  }
-  depends_on = [google_artifact_registry_repository.api_repo]
+  # triggers = {
+  #   always_run = timestamp()
+  # }
+  depends_on = [google_artifact_registry_repository.api_repo, google_pubsub_topic.pubsub_topics]
 }
 
 
@@ -59,22 +59,22 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
                 name = "API_KEY_SD"
                 value = var.api_key_sd
             }
-            env {
-                name = "SQL_HOST"
-                value = var.sql_host
-            }
-            env {
-                name = "SQL_USER"
-                value = var.sql_user
-            }
-            env {
-                name = "SQL_PASS"
-                value = var.sql_pass
-            }
-            env {
-                name = "SQL_DB"
-                value = var.sql_db
-            }
+            # env {
+            #     name = "SQL_HOST"
+            #     value = var.sql_host
+            # }
+            # env {
+            #     name = "SQL_USER"
+            #     value = var.sql_user
+            # }
+            # env {
+            #     name = "SQL_PASS"
+            #     value = var.sql_pass
+            # }
+            # env {
+            #     name = "SQL_DB"
+            #     value = var.sql_db
+            # }
             dynamic "env" {
                 for_each = var.topic_names
                 content {
@@ -87,7 +87,7 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
             }
         }
     }
-    depends_on = [google_artifact_registry_repository.api_repo, 
+    depends_on = [google_pubsub_topic.pubsub_topics,google_artifact_registry_repository.api_repo, 
     null_resource.docker_build_push_api, 
     google_service_account.cloudbuild_service_account,
     google_project_iam_member.act_as, 
