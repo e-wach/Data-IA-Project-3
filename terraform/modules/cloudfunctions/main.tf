@@ -54,7 +54,7 @@ resource "google_cloudfunctions2_function_iam_member" "unauthenticated_invoker" 
 
 # Cloud Functions from PubSub to CloudSQL (nba_games_week)
 resource "google_storage_bucket_object" "zip_upcoming_games" {
-  name   = "games.zip"
+  name   = "upcoming_games.zip"
   bucket = var.bucket_name
   source = "${path.module}/zip/upcoming_games.zip"
 }
