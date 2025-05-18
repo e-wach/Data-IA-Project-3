@@ -149,3 +149,52 @@ resource "google_cloudfunctions2_function_iam_member" "unauthenticated_invoker_o
   member         = "allUsers"
   depends_on = [google_cloudfunctions2_function.games_odds]
 }
+
+# Cloud Functions from PubSub to CloudSQL (injured)
+resource "google_storage_bucket_object" "zip_injured" {
+  name   = "injured.zip"
+  bucket = var.bucket_name
+  source = "${path.module}/zip/injured.zip"
+}
+
+resource "google_cloudfunctions2_function" "injured" {
+  name        = "injuredtosql"
+  location    = var.region
+  project     = var.project_id
+
+  build_config {
+    runtime     = "python312"
+    entry_point = "callback_injured"
+    source {
+      storage_source {
+        bucket = var.bucket_name
+        object = google_storage_bucket_object.zip_injured.name
+      }
+    }
+  }
+  service_config {
+    available_memory   = "256M"
+    timeout_seconds    = 60
+    environment_variables = {
+      PROJECT_ID = var.project_id
+      SQL_HOST   = var.sql_host
+      SQL_USER   = var.sql_user
+      SQL_PASS   = var.sql_pass
+      SQL_DB     = var.sql_db
+    }
+  }
+  event_trigger {
+    event_type    = "google.cloud.pubsub.topic.v1.messagePublished"
+    pubsub_topic  = "projects/${var.project_id}/topics/${var.topic_names[3]}"
+    trigger_region = var.region
+  }
+}
+
+resource "google_cloudfunctions2_function_iam_member" "unauthenticated_invoker_injured" {
+  project        = var.project_id
+  location       = var.region
+  cloud_function = google_cloudfunctions2_function.injured.name
+  role           = "roles/cloudfunctions.invoker"
+  member         = "allUsers"
+  depends_on = [google_cloudfunctions2_function.injured]
+}

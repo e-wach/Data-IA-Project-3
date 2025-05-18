@@ -1,4 +1,4 @@
-project_id = "data-ia-project-3"
+project_id = "feisty-lamp-442712-m8"
 region = "europe-west1"
 topic_names = [
   "nba_games",
@@ -8,6 +8,4 @@ topic_names = [
 ]
 dataset_id = "nba_dataset"
 bucket_name = "nba-functions-code"
-
-project_number = "1034485564291" #Projecr number de data-ia-project-3
-
+bq_table = "nba_games"
