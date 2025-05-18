@@ -4,8 +4,8 @@ from google.cloud import bigquery
 import functions_framework
 
 PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "default_project")
-DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
-NBA_GAMES_TABLE = os.getenv("BQ_TABLE", "nba_games")
+DATASET_ID = os.getenv("BQ_DATASET", "default_dataset")
+NBA_GAMES_TABLE = os.getenv("BQ_TABLE", "default_table")
 
 bq = bigquery.Client(project=PROJECT_ID)
 
