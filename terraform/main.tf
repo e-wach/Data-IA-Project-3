@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "terraformstatedp3"
+    bucket = "terraform-state-ewach" ######## CAMBIAR!!!
     prefix = "terraform/terraform.tfstate"
   }
 }
@@ -16,16 +16,16 @@ module "api" {
   sql_db = module.cloudsql.sql_db
   sql_pass = module.cloudsql.sql_pass
   sql_user = module.cloudsql.sql_user
+  depends_on = [module.bigquery]
 }
 
 module "bigquery" {
 source          = "./modules/bigquery"
   project_id      = var.project_id
-  project_number  = var.project_number
   region          = var.region
   dataset_id      = var.dataset_id
   bucket_name     = var.bucket_name
-  topic_names = var.topic_names
+  bq_table = var.bq_table
 }
 
 module "cloudsql" {
@@ -33,12 +33,27 @@ module "cloudsql" {
   region = var.region
 }
 
-module "api-agent" {
-  source = "./modules/api-agent"
+# module "api-agent" {
+#   source = "./modules/api-agent"
+#   region = var.region
+#   project_id = var.project_id
+#   sql_host = module.cloudsql.sql_host
+#   sql_db = module.cloudsql.sql_db
+#   sql_pass = module.cloudsql.sql_pass
+#   sql_user = module.cloudsql.sql_user
+# }
+
+module "cloudfunctions" {
+  source = "./modules/cloudfunctions"
   region = var.region
   project_id = var.project_id
+  dataset_id = var.dataset_id
+  bq_table = var.bq_table
+  bucket_name = var.bucket_name
+  topic_names = var.topic_names
   sql_host = module.cloudsql.sql_host
   sql_db = module.cloudsql.sql_db
   sql_pass = module.cloudsql.sql_pass
   sql_user = module.cloudsql.sql_user
+  depends_on = [module.bigquery, module.api, module.cloudsql]
 }
