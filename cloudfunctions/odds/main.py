@@ -9,11 +9,11 @@ import psycopg2
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "default_project")
-SQL_DB = os.getenv("DB_NAME", "nba_database")
-SQL_USER = os.getenv("USER", "nba_user")
-SQL_PASS =  os.getenv("SQL_PASS", "dataproject3")
-SQL_HOST = os.getenv("SQL_HOST", "34.22.170.250")
+PROJECT_ID  = os.getenv("PROJECT_ID", "default_project")
+SQL_DB = os.getenv("SQL_DB", "default-db")
+SQL_USER = os.getenv("SQL_USER", "user")
+SQL_PASS =  os.getenv("SQL_PASS", "password")
+SQL_HOST = os.getenv("SQL_HOST", "default_host")
 
 
 def get_postgres_connection():
@@ -60,7 +60,7 @@ def insert_postgres(payload):
         with get_postgres_connection() as conn:
             with conn.cursor() as cursor:
                 delete_query = """
-                DELETE FROM games_odds 
+                DELETE FROM game_odds 
                 WHERE created_at::date < CURRENT_DATE;
                 """
                 cursor.execute(delete_query)
