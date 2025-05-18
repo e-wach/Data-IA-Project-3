@@ -16,6 +16,7 @@ module "api" {
   sql_db = module.cloudsql.sql_db
   sql_pass = module.cloudsql.sql_pass
   sql_user = module.cloudsql.sql_user
+  dataset_id = var.dataset_id
   depends_on = [module.bigquery]
 }
 
@@ -33,15 +34,15 @@ module "cloudsql" {
   region = var.region
 }
 
-# module "api-agent" {
-#   source = "./modules/api-agent"
-#   region = var.region
-#   project_id = var.project_id
-#   sql_host = module.cloudsql.sql_host
-#   sql_db = module.cloudsql.sql_db
-#   sql_pass = module.cloudsql.sql_pass
-#   sql_user = module.cloudsql.sql_user
-# }
+module "api-agent" {
+  source = "./modules/api-agent"
+  region = var.region
+  project_id = var.project_id
+  sql_host = module.cloudsql.sql_host
+  sql_db = module.cloudsql.sql_db
+  sql_pass = module.cloudsql.sql_pass
+  sql_user = module.cloudsql.sql_user
+}
 
 module "cloudfunctions" {
   source = "./modules/cloudfunctions"
@@ -56,4 +57,13 @@ module "cloudfunctions" {
   sql_pass = module.cloudsql.sql_pass
   sql_user = module.cloudsql.sql_user
   depends_on = [module.bigquery, module.api, module.cloudsql]
+}
+
+module "frontend" {
+  source = "./modules/frontend"
+  region = var.region
+  project_id = var.project_id
+  sql-api-url = module.api-agent.sql-api-url
+  gemini_key = var.gemini_key
+  depends_on = [module.api, module.api-agent, module.bigquery, module.cloudsql]
 }

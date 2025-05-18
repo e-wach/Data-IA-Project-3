@@ -26,6 +26,7 @@ SQL_DB = os.getenv("SQL_DB", "default-db")
 # API KEYS
 API_KEY_ODDS = os.getenv('API_KEY_ODDS', 'default_key')
 API_KEY_SD = os.getenv("API_KEY_SD", "default_key")
+BQ_DATASET = os.getenv("BQ_DATASET", "default_dataset")
 
 
 @app.route("/setup/<string:type>", methods=["POST"])
@@ -67,14 +68,14 @@ def daily_data(type):
         elif type == "injured":
             get_injuries(topic_injured, PROJECT_ID, API_KEY_SD)
         elif type == "predictions":
-            get_predictions(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB)
+            get_predictions(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB, PROJECT_ID, BQ_DATASET)
         elif type == "all":
             yesterday_games(topic_games, PROJECT_ID, API_KEY_SD)
             time.sleep(5)
             get_upcoming_games(topic_games_week, PROJECT_ID, API_KEY_SD)
             get_odds_week(topic_odds, PROJECT_ID, API_KEY_ODDS)
             get_injuries(topic_injured, PROJECT_ID, API_KEY_SD)
-            get_predictions(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB)
+            get_predictions(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB, PROJECT_ID, BQ_DATASET)
         else:
             return jsonify({"error": "Invalid type provided."}), 400
         return {"status": "success", "message": f"{type} data sent to PubSub"}, 200

@@ -35,3 +35,7 @@ variable "sql_pass" {
 variable "sql_db" {
     type = string
 }
+
+variable "dataset_id" {
+  type    = string
+}

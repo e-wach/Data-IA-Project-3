@@ -10,6 +10,9 @@ import json
 import re  # Importa el módulo re para expresiones regulares
 from flask import Flask, request, jsonify
 
+SQL_API = os.getenv("SQL_API", "https://sql-api-1034485564291.europe-west1.run.app")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "default-key")
+
 # --- Define State Schema ---
 class State(TypedDict):
     message: HumanMessage
@@ -26,7 +29,7 @@ class FetchDataFromAPITool(BaseTool):
 
     def _run(self, tool_input: dict = {}) -> str:
         # print("\n[Llamada a la Herramienta] Obteniendo datos de la API...")
-        api_url = "https://sql-api-1034485564291.europe-west1.run.app/AgentSQL"
+        api_url = SQL_API
         try:
             response = requests.get(api_url)
             response.raise_for_status()
@@ -68,7 +71,7 @@ def reasoning_node(state: State) -> Dict[str, str]:
         return {"betting_recommendation": "Error: La API no devolvió un diccionario."}
 
     try:
-        api_key = os.environ.get("GEMINI_API_KEY")
+        api_key = GEMINI_API_KEY
         if not api_key:
             return {"betting_recommendation": {"error": "No se encontró la variable de entorno GEMINI_API_KEY"}}
         genai.configure(api_key=api_key)
@@ -207,5 +210,5 @@ def predict():
     return jsonify(final_state["output"])
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8008)
 

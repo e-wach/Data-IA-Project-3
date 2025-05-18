@@ -2,7 +2,8 @@ from google.cloud import bigquery
 import psycopg2
 import logging
 
-client = bigquery.Client()
+
+
 
 SQL_PORT = "5432"  
 
@@ -16,10 +17,52 @@ def connect_to_db(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB):
     )
     return connection
 
-def get_predictions(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB):
+def create_bq_model(PROJECT_ID, BQ_DATASET, client):
     try:
-        query = """
-        SELECT * FROM ML.FORECAST(MODEL `data-ia-project-3.nba_dataset.modelo_prediccion_puntos`,
+        model_queries = [ f"""
+        CREATE OR REPLACE MODEL `{PROJECT_ID}.{BQ_DATASET}.modelo_prediccion_puntos`
+    OPTIONS(
+        model_type = 'ARIMA_PLUS',
+        time_series_id_col = 'team_id', 
+        time_series_timestamp_col = 'game_date',
+        time_series_data_col = 'points' 
+    ) AS
+    SELECT
+        team_id,
+        game_date,
+        points
+    FROM
+        `{PROJECT_ID}.{BQ_DATASET}.nba_games`
+    ORDER BY
+        game_date;
+        """, 
+        f"""
+        SELECT *
+    FROM
+    ML.ARIMA_EVALUATE(MODEL `{PROJECT_ID}.{BQ_DATASET}.modelo_prediccion_puntos`, 
+    STRUCT(FALSE AS show_all_candidate_models));
+        """,
+        f"""
+        SELECT *
+    FROM ML.FORECAST(MODEL `{PROJECT_ID}.{BQ_DATASET}.modelo_prediccion_puntos`,
+        STRUCT(1 AS horizon, 0.8 AS confidence_level));
+        """
+        ]
+        for query in model_queries:
+            query_job = client.query(query)
+            query_job.result()
+        return "Model queries completed successfully"
+    except Exception as e:
+        logging.error(f"Error creating model: {e}")
+
+
+
+def get_predictions(SQL_HOST, SQL_USER, SQL_PASS, SQL_DB, PROJECT_ID, BQ_DATASET):
+    try:
+        client = bigquery.Client(project=PROJECT_ID, location="europe-west1")
+        create_bq_model(PROJECT_ID, BQ_DATASET, client)
+        query = f"""
+        SELECT * FROM ML.FORECAST(MODEL `{PROJECT_ID}.{BQ_DATASET}.modelo_prediccion_puntos`,
         STRUCT(1 AS horizon, 0.8 AS confidence_level)) 
         """
         query_job = client.query(query)

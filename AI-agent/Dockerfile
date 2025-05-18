@@ -16,7 +16,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY bet_agent_v2.py .
 
 # Expose the port Flask is running on
-EXPOSE 8080
+EXPOSE 8008
 
 # Run the Flask app
 CMD ["python", "bet_agent_v2.py"]

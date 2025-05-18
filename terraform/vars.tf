@@ -31,3 +31,8 @@ variable "dataset_id" {
 variable "bq_table" {
   type = string
 }
+
+variable "gemini_key" {
+    type = string
+    sensitive = true
+}
