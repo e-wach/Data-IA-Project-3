@@ -10,7 +10,7 @@ import json
 import re  # Importa el módulo re para expresiones regulares
 from flask import Flask, request, jsonify
 
-SQL_API = os.getenv("SQL_API", "https://sql-api-1034485564291.europe-west1.run.app")
+SQL_API = os.getenv("SQL_API", "default-url")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "default-key")
 
 # --- Define State Schema ---
