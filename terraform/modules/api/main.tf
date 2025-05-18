@@ -29,16 +29,16 @@ resource "null_resource" "docker_build_push_api" {
       docker build -t ${local.image_path} -f ../API/Dockerfile ../API && docker push ${local.image_path}
     EOT
   }
-  # triggers = {
-  #   always_run = timestamp()
-  # }
+  triggers = {
+    always_run = timestamp()
+  }
   depends_on = [google_artifact_registry_repository.api_repo, google_pubsub_topic.pubsub_topics]
 }
 
 
 ## Cloud Run Service
 resource "google_cloud_run_v2_service" "cloudrun-api" {
-    name = "nbaapi"
+    name = "nba-api"
     location = var.region
     deletion_protection = false
     ingress = "INGRESS_TRAFFIC_ALL"
@@ -74,6 +74,10 @@ resource "google_cloud_run_v2_service" "cloudrun-api" {
             env {
                 name = "SQL_DB"
                 value = var.sql_db
+            }
+            env {
+              name = "BQ_DATASET"
+              value = var.dataset_id
             }
             dynamic "env" {
                 for_each = var.topic_names
@@ -128,6 +132,19 @@ resource "google_project_iam_member" "bigquery_reader" {
   role    = "roles/bigquery.dataViewer"
   member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
 }
+
+resource "google_project_iam_member" "bigquery_user" {
+  project = var.project_id
+  role    = "roles/bigquery.user"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
+resource "google_project_iam_member" "bigquery_editor" {
+  project = var.project_id
+  role    = "roles/bigquery.dataEditor"
+  member  = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+}
+
 
 resource "google_project_iam_member" "cloudsql_client" {
   project = var.project_id
