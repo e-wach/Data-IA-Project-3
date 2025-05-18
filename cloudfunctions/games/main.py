@@ -10,9 +10,9 @@ from google.cloud import bigquery
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-PROJECT_ID  = os.getenv("GCP_PROJECT_ID", "default_project")
-DATASET_ID = os.getenv("BQ_DATASET", "nba_dataset")
-NBA_GAMES_TABLE = os.getenv("NBA_GAMES_TABLE", "nba_games")
+PROJECT_ID  = os.getenv("PROJECT_ID", "default_project")
+DATASET_ID = os.getenv("BQ_DATASET", "default-dataset")
+NBA_GAMES_TABLE = os.getenv("NBA_GAMES_TABLE", "default-table")
 
 bq = bigquery.Client(project=PROJECT_ID)
 

@@ -28,24 +28,6 @@ variable "dataset_id" {
   type    = string
 }
 
-
-variable "project_number" {
+variable "bq_table" {
   type = string
-}
-
-variable "sql_host" {
-  type = string
-}
-
-variable "sql_user" {
-  type = string
-}
-
-variable "sql_pass" {
-  type      = string
-  sensitive = true
-}
-
-variable "sql_db" {
-  type    = string
 }

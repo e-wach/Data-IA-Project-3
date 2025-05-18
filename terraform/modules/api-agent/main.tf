@@ -15,9 +15,9 @@ resource "null_resource" "docker_build_push_api_agent" {
       docker build -t ${local.image_path} -f ../API-AI/Dockerfile ../API-AI && docker push ${local.image_path}
     EOT
   }
-  triggers = {
-    always_run = timestamp()
-  }
+  # triggers = {
+  #   always_run = timestamp()
+  # }
   depends_on = [google_artifact_registry_repository.sql_api_repo]
 }
 

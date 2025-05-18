@@ -25,9 +25,11 @@ resource "google_sql_user" "postgres_user" {
   name     = "nba_user"
   instance = google_sql_database_instance.postgres_instance.name
   password = "dataproject3"
+  depends_on = [google_sql_database_instance.postgres_instance]
 }
 
 resource "google_sql_database" "postgres_db" {
   name     = "nba_database"
   instance = google_sql_database_instance.postgres_instance.name
+  depends_on = [google_sql_database_instance.postgres_instance]
 }

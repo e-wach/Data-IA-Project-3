@@ -29,6 +29,7 @@ def get_injuries(topic, PROJECT_ID, API_KEY_SD):
                 message = json.dumps(player_data)
                 logging.info(f"message sent to pubsub: {message}")
                 publish_message(topic, message, PROJECT_ID)
+                logging.info(f"Sent to {topic}")
         else:
             logging.error(f"Error fetching injured players: {response.status_code}")
     except Exception as e:
