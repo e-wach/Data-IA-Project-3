@@ -58,3 +58,12 @@ module "cloudfunctions" {
   sql_user = module.cloudsql.sql_user
   depends_on = [module.bigquery, module.api, module.cloudsql]
 }
+
+module "frontend" {
+  source = "./modules/frontend"
+  region = var.region
+  project_id = var.project_id
+  sql-api-url = module.api-agent.sql-api-url
+  gemini_key = var.gemini_key
+  depends_on = [module.api, module.api-agent, module.bigquery, module.cloudsql]
+}
