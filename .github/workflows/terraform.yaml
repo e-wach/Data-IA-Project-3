@@ -16,15 +16,22 @@ jobs:
         with:
           terraform_version: 1.5.0
       
-      - name: Authenticate to GCP
+      - name: Set up GCP credentials
         run: |
           echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcloud.json
+
+      - name: Authenticate to Google Cloud
+        run: |
+          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
+          gcloud config set project original-list-459014-b6
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud.json
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp-key.json
 
       - name: Terraform Init
         run: terraform init
         working-directory: terraform
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp-key.json
 
       - name: Terraform Plan
         run: terraform plan
