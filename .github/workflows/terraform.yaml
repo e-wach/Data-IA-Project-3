@@ -30,7 +30,7 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} 
           TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
           TF_VAR_api_key_sd:   ${{ secrets.API_KEY_SD }}
           TF_VAR_gemini_key:   ${{ secrets.GEMINI_KEY }}
@@ -38,7 +38,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} 
           TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
           TF_VAR_api_key_sd:   ${{ secrets.API_KEY_SD }}
           TF_VAR_gemini_key:   ${{ secrets.GEMINI_KEY }}
