@@ -6,6 +6,10 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform 
 
     steps:
       - name: Checkout repo
@@ -16,26 +20,15 @@ jobs:
         with:
           terraform_version: 1.5.0
       
-      - name: Set up GCP credentials
-        run: |
-          echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcloud.json
 
-      - name: Authenticate to Google Cloud
-        run: |
-          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
-          gcloud config set project original-list-459014-b6
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp-key.json
 
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp-key.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} 
 
       - name: Terraform Plan
         run: terraform plan
-        working-directory: terraform
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud.json
           TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
@@ -44,7 +37,6 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: terraform
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud.json
           TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
