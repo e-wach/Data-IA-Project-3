@@ -107,7 +107,6 @@ def transform_team_id_to_abbr(payload):
         return None
 
 
-# NBA TEAMS
 @functions_framework.cloud_event
 def callback_games(cloud_event):
     try:

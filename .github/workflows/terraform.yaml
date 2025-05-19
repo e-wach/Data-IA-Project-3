@@ -1,0 +1,34 @@
+name: Terraform Manual Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        env:
+          TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
+          TF_VAR_api_key_sd:   ${{ secrets.API_KEY_SD }}
+          TF_VAR_gemini_key:   ${{ secrets.GEMINI_KEY }}
+        run: terraform plan
+
+      - name: Terraform Apply
+        env:
+          TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
+          TF_VAR_api_key_sd:   ${{ secrets.API_KEY_SD }}
+          TF_VAR_gemini_key:   ${{ secrets.GEMINI_KEY }}
+        run: terraform apply -auto-approve

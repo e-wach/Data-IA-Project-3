@@ -103,3 +103,4 @@ resource "google_storage_bucket_object" "past_games_csv" {
     google_cloudfunctions2_function.callback_past_games
   ]
 }
+

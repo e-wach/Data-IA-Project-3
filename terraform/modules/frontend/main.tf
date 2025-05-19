@@ -1,3 +1,4 @@
+# AI Agent Cloud Run Service (API)
 resource "google_artifact_registry_repository" "agent-repo" {
   location      = var.region
   repository_id = "ai-agent-repo"
@@ -14,19 +15,19 @@ resource "null_resource" "docker_build_push_agent" {
       docker build -t ${local.image_path} -f ../AI-agent/Dockerfile ../AI-agent && docker push ${local.image_path} 
     EOT
   }
-  triggers = {
-    always_run = timestamp()
-  }
+  # triggers = {
+  #   always_run = timestamp()
+  # }
   depends_on = [google_artifact_registry_repository.agent-repo]
 }
 
-## Cloud Run Service
 resource "google_cloud_run_v2_service" "cloudrun-agent" {
-    name = "ai-agent-endpoint"
+    name = "ai-agent"
     location = var.region
     deletion_protection = false
     ingress = "INGRESS_TRAFFIC_ALL"
     template {
+        service_account = google_service_account.agent_sa.email
         containers {
             image = local.image_path
             ports {
@@ -54,3 +55,17 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
 
   depends_on = [google_cloud_run_v2_service.cloudrun-agent]
 }
+
+resource "google_service_account" "agent_sa" {
+  account_id   = "agent-service-account"
+  display_name = "Service Account for AI Agent Cloud Run"
+}
+
+resource "google_project_iam_member" "cloudsql_client" {
+  project = var.project_id
+  role   = "roles/cloudsql.client"
+  member = "serviceAccount:${google_service_account.agent_sa.email}"
+}
+
+
+# Frontend (Streamlit) in Cloud Run

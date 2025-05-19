@@ -1,4 +1,6 @@
-project_id = "feisty-lamp-442712-m8"
+
+project_id = "original-list-459014-b6" ## Cambiar
+
 region = "europe-west1"
 topic_names = [
   "nba_games",
@@ -7,5 +9,6 @@ topic_names = [
   "injured_players"
 ]
 dataset_id = "nba_dataset"
-bucket_name = "nba-functions-code"
+
 bq_table = "nba_games"
+bucket_name = "nba-functions-code-dp3" ## Cambiar
