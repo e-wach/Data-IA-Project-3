@@ -15,14 +15,14 @@ resource "null_resource" "docker_build_push_agent" {
       docker build -t ${local.image_path} -f ../AI-agent/Dockerfile ../AI-agent && docker push ${local.image_path} 
     EOT
   }
-  # triggers = {
-  #   always_run = timestamp()
-  # }
+  triggers = {
+    always_run = timestamp()
+  }
   depends_on = [google_artifact_registry_repository.agent-repo]
 }
 
 resource "google_cloud_run_v2_service" "cloudrun-agent" {
-    name = "ai-agent"
+    name = "aiagent"
     location = var.region
     deletion_protection = false
     ingress = "INGRESS_TRAFFIC_ALL"
@@ -104,7 +104,7 @@ resource "google_cloud_run_v2_service" "cloudrun-streamlit" {
             }
             env {
                 name = "AGENT_API"
-                value = "${google_cloud_run_v2_service.cloudrun-agent.uri}/predict"
+                value = "${google_cloud_run_v2_service.cloudrun-agent.uri}"
             }
         }
         }

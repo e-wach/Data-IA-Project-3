@@ -87,7 +87,8 @@ Se te proporcionará la siguiente información: {api_data}, la cual contiene un 
 "injured_players": En esta parte del diccionario nos interesa:
     * Saber que id de team corresponde a cada equipo (el id de cada equipo corresponde al segundo numero de injuered players, ej :1610612738 ), para poder hacer la relación con los partidos, además aparece la abreviacion de cada equipo. Y el nombre de cada jugador lesionado. Al estado de la lesion no lo tendremos en cuenta, todos los jugadores que aparezcan en "injured_players" se consideraran lesionados.
 "nba_games_week": En esta parte del diccionario nos interesa:
-    * Los equipos que se enfrentan, por lo que aparece la abreviacion de cada equipo y el id de cada equipo. El equipo que aparece primero es el local y el segundo el visitante.
+    * Los equipos que se enfrentan, por lo que aparece la abreviacion de cada equipo y el id de cada equipo. El equipo que aparece primero es el local y el segundo el visitante. 
+     * También nos interesa la fecha del partido.
 "predictions": En esta parte del diccionario nos interesa:
     * El id de cada equipo, lo cual corresponde al primer valor que aparece, y la prediccion de puntos que se espera que haga cada equipo, el cual corresponde al tercer valor que aparece.
 
@@ -97,10 +98,12 @@ Devuelve SOLO un objeto JSON válido sin ningún texto adicional ni bloques de c
 
 El objeto JSON debe tener la siguiente estructura:
 Para el partido y para el equipo ganador,  quiero que utilices el nombre completo de cada equipo, y no la abreviación. Para la odd necesito que me saques el valor para el cual tiene esa apuesta esa casa de apuesta
+Cada partido debe incluir también la fecha en formato "YYYY-MM-DD".
 {{
     "estrategia": [
         {{
             "partido": "Equipo A vs Equipo B",
+            "fecha": "2025-05-20",
             "ganador": "Equipo A",
             "casa_de_apuestas": "Casa1",
             "odds": 1.5,
@@ -108,6 +111,7 @@ Para el partido y para el equipo ganador,  quiero que utilices el nombre complet
         }},
         {{
             "partido": "Equipo C vs Equipo D",
+            "fecha": "2025-05-20",
             "ganador": "Equipo D",
             "casa_de_apuestas": "Casa2",
             "odds": 2.0,
