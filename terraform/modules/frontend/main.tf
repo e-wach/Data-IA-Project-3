@@ -69,3 +69,56 @@ resource "google_project_iam_member" "cloudsql_client" {
 
 
 # Frontend (Streamlit) in Cloud Run
+resource "google_artifact_registry_repository" "streamlit-repo" {
+  location      = var.region
+  repository_id = "streamlit-repo"
+  format        = "DOCKER"
+}
+
+locals {
+    image_path_streamlit = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.agent-repo.repository_id}/streamlit:latest"
+  }
+
+resource "null_resource" "docker_build_push_streamlit" {
+  provisioner "local-exec" {
+    command = <<EOT
+      docker build -t ${local.image_path_streamlit} -f ../streamlit/Dockerfile ../streamlit && docker push ${local.image_path_streamlit} 
+    EOT
+  }
+  triggers = {
+    always_run = timestamp()
+  }
+  depends_on = [google_artifact_registry_repository.streamlit-repo]
+}
+
+resource "google_cloud_run_v2_service" "cloudrun-streamlit" {
+    name = "streamlit"
+    location = var.region
+    deletion_protection = false
+    ingress = "INGRESS_TRAFFIC_ALL"
+    template {
+        containers {
+            image = local.image_path_streamlit
+            ports {
+                container_port = 8080
+            }
+            env {
+                name = "AGENT_API"
+                value = "${google_cloud_run_v2_service.cloudrun-agent.uri}/predict"
+            }
+        }
+        }
+    depends_on = [google_cloud_run_v2_service.cloudrun-agent,
+                  google_artifact_registry_repository.streamlit-repo, 
+                  null_resource.docker_build_push_streamlit]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "public_invoker_streamlit" {
+  project = google_cloud_run_v2_service.cloudrun-streamlit.project
+  location = google_cloud_run_v2_service.cloudrun-streamlit.location
+  name = google_cloud_run_v2_service.cloudrun-streamlit.name
+  role = "roles/run.invoker"
+  member = "allUsers"
+
+  depends_on = [google_cloud_run_v2_service.cloudrun-streamlit]
+}
