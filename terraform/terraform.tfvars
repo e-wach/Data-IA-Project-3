@@ -1,5 +1,5 @@
 
-project_id = "<PROJECT_ID>"
+project_id = "original-list-459014-b6"
 
 region = "europe-west1"
 topic_names = [
@@ -11,4 +11,4 @@ topic_names = [
 dataset_id = "nba_dataset"
 
 bq_table = "nba_games"
-bucket_name = "<UNIQUE_BUCKET_NAME>" ## bucket-cf-dp3"
+bucket_name = "nba-functions-code-dp3"
