@@ -39,17 +39,17 @@ jobs:
           gcloud auth configure-docker europe-west1-docker.pkg.dev
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init 
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -lock=false
         env:
           TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
           TF_VAR_api_key_sd:   ${{ secrets.API_KEY_SD }}
           TF_VAR_gemini_key:   ${{ secrets.GEMINI_KEY }}
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -lock=false
         env:
           TF_VAR_api_key_odds: ${{ secrets.API_KEY_ODDS }}
           TF_VAR_api_key_sd:   ${{ secrets.API_KEY_SD }}
