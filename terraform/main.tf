@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "terraform-state-ewach" ######## CAMBIAR!!!
+    bucket = "<BUCKET_STATE_TF>" 
     prefix = "terraform/terraform.tfstate"
   }
 }
