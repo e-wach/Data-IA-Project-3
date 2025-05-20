@@ -41,11 +41,11 @@ def display_betting_strategy(strategy_data):
             
             # Display teams with the recommended one in orange
             if teams[0] == recommended_team:
-                # st.markdown(f"**Recommended Bet:** :orange[{teams[0]}] vs {teams[1]} ({bet['date']})")
-                st.markdown(f"**Recommended Bet:** :orange[{teams[0]}] vs {teams[1]}")
+                st.markdown(f"**Recommended Bet:** :orange[{teams[0]}] vs {teams[1]} ({bet['fecha']})")
+                # st.markdown(f"**Recommended Bet:** :orange[{teams[0]}] vs {teams[1]}")
             else:
-                # st.markdown(f"**Recommended Bet:** {teams[0]} vs :orange[{teams[1]}] ({bet['date']})")
-                st.markdown(f"**Recommended Bet:** {teams[0]} vs :orange[{teams[1]}]")
+                st.markdown(f"**Recommended Bet:** {teams[0]} vs :orange[{teams[1]}] ({bet['fecha']})")
+                # st.markdown(f"**Recommended Bet:** {teams[0]} vs :orange[{teams[1]}]")
             
             st.write(f"**Bookmaker:** {bet['casa_de_apuestas']}")
             st.write(f"**Odds:** {bet['odds']}")
